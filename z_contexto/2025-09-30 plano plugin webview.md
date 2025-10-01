@@ -101,65 +101,45 @@
 
 - projeto
     - `README.md`
-        - Explica propósito do plugin, instruções de instalação/teste e opções configuráveis.
+        - Explica o propósito do plugin, como usar os comandos para gerar/atualizar o sumário e as opções de configuração.
     - `package.json`
-        - Dependências (markdown-it, any slug/utility libs), scripts (build/test), metadados NPM se necessário.
+        - Dependências (markdown-it), scripts de build, e metadados do plugin.
     - `manifest.json`
-        - Arquivo obrigatório de plugin Joplin (id, version, name, main, required API version, etc.).
-    - `.vscode/`
-        - `launch.json` (opcional)
-            - Configurações para debug rápido do plugin no ambiente local (se usar VSCode Debugger).
+        - Arquivo de manifesto do plugin Joplin, definindo ID, versão, nome, etc.
     - `src/`
-        - `index.ts` 
-            - Ponto de entrada: `joplin.plugins.register`.
-            - Registra comandos e orquestra o acionamento do painel via `panelManager`.
-        - `commands.js` 
-            - Define e registra os comandos do plugin.
-        - `api/` 
+        - `index.ts`
+            - Ponto de entrada principal (`joplin.plugins.register`).
+            - Registra os `Content Scripts` (MarkdownIt plugins) para analisar a nota.
+            - Registra os comandos do usuário (ex: gerar sumário).
+            - Orquestra a lógica principal: recebe dados dos content scripts e usa os módulos da `api/` para modificar o corpo da nota.
+        - `commands.js`
+            - Define e registra os comandos do usuário, como por exemplo `gerarSumarioNaNota`.
+        - `content_scripts/`
+            - `tocGenerator.js`
+                - Um `MarkdownItPlugin` que analisa os títulos da nota durante a renderização.
+                - Extrai a estrutura de títulos (nível, texto, slug).
+                - Envia essa estrutura para o plugin principal (`index.ts`) via `postMessage`.
+            - `sectionHandler.js`
+                - Um `MarkdownItPlugin` para a lógica de seções recolhíveis (`<details>`).
+                - Modifica a renderização dos títulos para envolvê-los em tags `<details>` e `<summary>`.
+        - `api/`
             - `parser.js`
-                - Encapsula uso de `markdown-it` para parsear `note.body` em tokens/AST.
-                - Fornece utilitários para extrair headings, detectar `open` (última palavra), localizar anchors `{#slug}`, e extrair listas/items com `open`.
-                - Exporta funções testáveis (ex.: `parseNoteToTokens(body)` / `extractHeadings(tokens)`).
+                - Encapsula o uso de `markdown-it` para analisar o corpo da nota (`note.body`) em tokens.
+                - Fornece utilitários para extrair títulos e seus níveis.
             - `sectioner.js`
-                - Implementa algoritmo de sectioning (stack-based) que agrupa tokens em seções conforme níveis de heading.
-                - Produz estrutura intermediária que pode ser transformada em HTML com `<details>` aninhados.
-                - Responsável por remover/retornar somente a palavra `open` quando for necessário (aqui você decidiu mantê-la visível — mas a função permite strip se precisar).
+                - Implementa o algoritmo para agrupar conteúdo sob os títulos corretos, respeitando a hierarquia.
+                - Essencial para a funcionalidade de seções recolhíveis (`<details>`).
             - `slug.js`
-                - Centraliza algoritmo de slugify (opções para compatibilidade com VSCode/TOC).
-                - Função de match: `matchHeaderBySlug(tokens, slug)` que prioriza anchors explícitos e depois heurística de slug.
-                - Facilita mudança futura (se trocar política de slug).
+                - Centraliza a lógica para criar "slugs" (IDs de URL amigáveis) a partir dos textos dos títulos, para criar os links do sumário.
             - `noteSync.js`
-                - Leitura/escrita segura da nota via `joplin.data.get` / `put`.
-                - Implementa read-modify-write, verificação de `updated_time`, e reconciliação simples (reparse e reaplicar mudanças).
-                - Debounce de gravações e queueing por `noteId`.
+                - Gerencia a leitura e escrita segura da nota usando `joplin.data.api`.
+                - Implementa um fluxo de "ler-modificar-escrever" para inserir o sumário ou atualizar os estados (`open`) das seções.
             - `patcher.js`
-        - `ui/`
-            - `mainHtml.js` (Novo)
-                - Fábrica de HTML. Responsável por ler os assets da pasta `web/` (`index.html`, `styles.css`, `panel.js`).
-                - Monta a string HTML final e auto-contida, embutindo o CSS dentro de tags `<style>` e o JS dentro de tags `<script>`.
-                - Fornece uma função para ser consumida pelo `panelManager.js`.
-            - `panelManager.js` (Refatorado)
-                - Controlador do Painel. Responsável exclusivamente por interagir com a API `joplin.views.panels`.
-                - Cria o painel, o mostra e esconde.
-                - Usa o `mainHtml.js` para obter o HTML completo e o injeta no painel via `setHtml`.
-                - Gerencia a comunicação (`onMessage`, `postMessage`) com a webview.
-                - Não contém mais `addScript` ou `addCss`.
-            - `sessionCache.js`
-                - Cache em memória (noteId → parsed AST, generated HTML, lastSentHash) para evitar re-render desnecessário.
-                - Mantém o estado temporário entre eventos dentro da sessão do plugin.
-    - `web/`
-        - `index.html`
-            - Template HTML. Contém a estrutura base (esqueleto) da webview, com placeholders se necessário.
-        - `panel.js`
-            - Script do Cliente. Contém a lógica que roda dentro da webview (escuta de mensagens, manipulação do DOM, envio de eventos de clique). Seu conteúdo será embutido no HTML final.
-        - `styles.css`
-            - Folha de Estilos. Contém todo o CSS para o painel. Seu conteúdo será embutido no HTML final.
-
+                - Contém a lógica para aplicar as alterações (o sumário gerado ou as tags `<details>`) no corpo do markdown da nota de forma inteligente.
 - configurações
     - API principal: joplin plugin
     - linguagens: typescript, javascript, nodejs
     - bibliotecas: markdown-it
-
 - dicas e lembretes
     - Mantenha o parser/slug/sectioner bem testados — são o coração da lógica; preferível escrever testes unitários antes de integrar UI.
     - Minimize writes: use debounce e compare `note.updated_time` para reduzir sobrescritas acidentais.
@@ -171,17 +151,39 @@
 <details>
 <summary><h2 style="display: inline">4. Lógicas (Revisado)</h2></summary>
 
-- Fluxo de Renderização da View
-    1. Usuário aciona o comando para abrir o painel.
-    2. `panelManager.js` é ativado.
-    3. `panelManager.js` chama uma função em `mainHtml.js` para construir o HTML inicial (com o estado "Carregando...").
-    4. `mainHtml.js` lê `web/index.html`, `web/styles.css`, `web/panel.js`.
-    5. `mainHtml.js` gera uma string HTML única, com o CSS embutido em `<style>` e o JS embutido em `<script>`.
-    6. `panelManager.js` recebe essa string e a injeta no painel com `joplin.views.panels.setHtml()`.
-    7. `panelManager.js` então processa a nota atual (usando os módulos da `api/`) para gerar o conteúdo dinâmico.
-    8. `panelManager.js` envia o conteúdo dinâmico para a webview via `postMessage`.
-    9. O `panel.js` (agora rodando na webview) recebe a mensagem e atualiza o DOM para exibir o conteúdo da nota.
-- versão antiga, revisar depois
+- fluxo do plugin
+    - Fluxo de Geração do Sumário (TOC)
+        - Este fluxo é iniciado manualmente pelo usuário através de um comando.
+        - 1. O usuário executa o comando para criar/atualizar o sumário na nota ativa.
+        - 2. `index.ts` recebe a chamada do comando.
+        - 3. `noteSync.js` é usado para ler o conteúdo atual e completo da nota.
+        - 4. O conteúdo markdown é passado para o `parser.js`, que extrai todos os títulos (nível, texto).
+        - 5. Com a lista de títulos, uma nova lista de links em formato markdown é gerada. O `slug.js` cria os links de âncora (ex: `[Título](#título)`).
+        - 6. `patcher.js` pega o corpo original da nota e o novo sumário em markdown, e insere ou substitui o sumário antigo de forma inteligente (procurando por um marcador como `<!-- TOC -->` ou um sumário anterior).
+        - 7. `noteSync.js` salva o corpo da nota modificado de volta no Joplin.
+    - Fluxo de Renderização das Seções Recolhíveis
+        - Este fluxo acontece automaticamente toda vez que o Joplin renderiza a visualização de uma nota.
+        - 1. O Joplin inicia a renderização do markdown.
+        - 2. O nosso `ContentScript` (`content_scripts/sectionHandler.js`), registrado como um `MarkdownItPlugin`, é ativado.
+        - 3. O plugin sobrescreve as regras de renderização padrão para títulos (`heading_open`, `heading_close`).
+        - 4. Ao encontrar um título, em vez de renderizar apenas `<h1>`, ele o envolve em tags `<details>` e `<summary>`.
+        - 5. A lógica do `sectioner.js` é usada para garantir que todo o conteúdo abaixo de um título fique dentro da sua respectiva tag `<details>`, respeitando a hierarquia de títulos.
+        - 6. O script também verifica se o texto do título no markdown original contém a palavra-chave `open`. Se contiver, ele adiciona o atributo `open` à tag `<details>` (`<details open>`), fazendo com que a seção já apareça aberta.
+    - Fluxo de Persistência do Estado de Abertura (Toggle)
+        - Este fluxo salva o estado (aberto/fechado) de uma seção quando o usuário clica nela.
+        - 1. O usuário clica em um `<summary>` na nota renderizada, o que abre ou fecha a seção.
+        - 2. Um pequeno script Javascript, também injetado pelo `ContentScript`, detecta esse evento de clique.
+        - 3. O script identifica o título que foi clicado e seu novo estado (aberto ou fechado).
+        - 4. Ele envia uma mensagem para o plugin principal via `postMessage` (ex: `{ command: 'toggleState', slug: 'titulo-clicado', isOpen: true }`).
+        - 5. `index.ts` recebe a mensagem.
+        - 6. Usando `patcher.js` e `noteSync.js`, ele localiza a linha do título correspondente no markdown da nota.
+        - 7. Ele adiciona ou remove a palavra-chave ` open` no final da linha do título.
+        - 8. `noteSync.js` salva a nota com a alteração.
+
+<details>
+<summary><h2 style="display: inline">4.1. versões anteriores e testes</h2></summary>
+
+- logicas, versão antiga, revisar depois
     - Configurações principais do plugin
         - `addAnchors` (bool, opcional) — se true, plugin poderá inserir anchors `{#slug}` para estabilidade (configurável).
         - `debounceSaveMs` — tempo para agrupar gravações (ex.: 800 ms).
@@ -253,7 +255,82 @@
         - [ ] Definir debounce default (ex.: 800 ms).
         - [ ] Especificar comportamento quando não encontra header por slug (log, notificar usuário, refazer TOC).
         - [ ] Escolher se painel reescreve a nota mesmo para toggles que já correspondem ao estado atual (evitar writes redundantes).
-</details>
+- testes webview, comunicação
+    - analise
+        #### Pontos Críticos da Combinação (usando Content Scripts)
+
+        Baseado na nossa investigação, os principais desafios técnicos (pontos críticos) para fazer essa combinação de funcionalidades funcionar são:
+
+        **Acesso e "Timing":** Como e, principalmente, quando nosso script acessa o HTML da nota? Precisamos ter certeza que o conteúdo já foi totalmente renderizado pelo Joplin antes de tentarmos manipulá-lo.
+        **Manipulação Segura do DOM:** Como podemos modificar o HTML (adicionar um sumário, envolver seções em divs) sem quebrar funcionalidades nativas do Joplin, como a sincronização de rolagem entre o editor e o visualizador?
+        **Comunicação Bidirecional:** Como o content script (que roda na webview) envia dados de volta para o plugin (que roda no processo principal)? Por exemplo, para informar sobre a estrutura da nota. E como o plugin envia configurações para o content script?
+        **Estilização Isolada**: Como aplicamos nosso CSS customizado nos elementos que criamos sem afetar ou sermos afetados negativamente pelo tema atual do Joplin (claro, escuro, etc.)?
+
+        #### Pesquisa por Soluções nos Documentos
+
+        A boa notícia é que a documentação e o plugin de exemplo que analisamos já nos dão pistas claras para cada um desses pontos:
+
+        **Acesso e "Timing":** O modelo do MarkdownItPlugin é a solução. Ele nos permite registrar uma função que é chamada durante o processo de renderização do Joplin. Isso garante que nosso código execute no momento exato em que o HTML está sendo gerado, nos dando controle total.
+        Manipulação Segura do DOM: O exemplo markdownItTestPlugin.ts mostra como substituir as regras de renderização. Em vez de manipular o DOM depois, nós geramos o HTML correto diretamente. Para os nossos objetivos, podemos, por exemplo, criar uma regra que renderiza os cabeçalhos (#, ##) não apenas como <h1>, <h2>, mas já envolvendo-os em divs com IDs, preparando o terreno para nossas outras funcionalidades.
+        **Comunicação Bidirecional:**
+        Script -> Plugin: O exemplo mostra a função joplinContentScriptPostMessage('ID_DO_SCRIPT', MENSAGEM). Podemos usá-la para enviar dados.
+        Plugin -> Script: A comunicação nesse sentido é mais simples. O plugin pode passar dados ao registrar o script ou ao definir o HTML, mas a forma mais elegante é o script pedir dados ao plugin usando a mesma postMessage.
+        **Estilização Isolada:** O plugin de exemplo tem uma função assets que retorna uma lista de arquivos CSS e JS a serem incluídos na página. Essa é a solução perfeita: criamos um arquivo CSS para nossos componentes e o Joplin o injetará na página.
+        **Persistência:** As soluções devem sempre considerar que a expperiencia do usuario será contínua, tanto entre sessões () quanto entre dispositivos. Para persistencia de estado de abertura de `<details>` foi adotada uma solução não usual de atualizar automaticamente essa informação  de volta no conteudo da nota.
+        **Simplicidade e Aprendizado:** Lembrar sempre que este é um projeto de uso individual, o plugin não será publicado, e que também tem o objetivo de aprendizado do desenvolvedor. Algumas otimizações e seguranças não são necessárias. O código deve ser claro, direto e com funções que possam ser facilmente relacionadas às funcionalidades do plugin, evitando complexidade desnecessária para facilitar o entendimento e a manutenção.
+
+        #### Testes Simples
+
+        Para validar essas soluções em nosso plugin, sugiro implementarmos os seguintes testes mínimos, um de cada vez:
+
+        ##### Teste de Renderização e Estilo:
+
+        Objetivo: Provar que conseguimos interceptar a renderização de um elemento e aplicar um estilo customizado.
+        Implementação: Usar a API de ContentScript como um MarkdownItPlugin para encontrar todos os cabeçalhos de nível 1 (# Titulo) e adicionar uma classe CSS meu-h1-custom. Ao mesmo tempo, registrar um arquivo meu-estilo.css que define meu-h1-custom { color: red; }.
+        Resultado Esperado: Todos os títulos H1 na nota renderizada devem aparecer em vermelho.
+        <br>
+
+        ##### Teste de Comunicação (Script -> Plugin):
+
+        Objetivo: Provar que a webview pode enviar uma mensagem para o nosso plugin.
+        Implementação: No MarkdownItPlugin do teste anterior, além de colorir o H1, adicionar um botão <button id="meu-botao">Clique-me</button> abaixo dele. Registrar um script JS que adiciona um listener a esse botão. Ao ser clicado, ele deve chamar joplinContentScriptPostMessage('meu-plugin', 'H1 clicado!'). No index.ts do plugin, usar joplin.contentScripts.onMessage para ouvir essa mensagem e logá-la no console do Joplin (console.info(...)).
+        Resultado Esperado: Ao clicar no botão na nota renderizada, a mensagem "H1 clicado!" deve aparecer no console de desenvolvimento do Joplin.
+    - plano de testes
+        #### 6.2.1. reforço do Objetivo Geral do Projeto
+
+        Aprimorar a funcionalidade das notas no Joplin, adicionando recursos como sumário automático, seções recolhíveis e outras melhorias de formatação.
+        Requisito Chave: As modificações geradas (como um sumário) devem ser persistidas diretamente no corpo do Markdown da nota.
+
+        #### 6.2.2. Arquitetura Decidida:
+
+        Abandonar: A abordagem de "fábrica de HTML", que consiste em criar um painel webview separado (panelManager.js, mainHtml.js, web/).
+        Adotar: A abordagem de Content Scripts, utilizando a API joplin.contentScripts. Esta é a forma nativa e recomendada para modificar a visualização de notas.
+
+
+        #### 6.2.4. Fluxo de Trabalho da Nova Arquitetura:
+
+        Um Content Script (especificamente um MarkdownItPlugin) "lê" a estrutura da nota durante a renderização do Joplin.
+        O script envia a estrutura extraída (ex: lista de cabeçalhos) para o Plugin Principal (index.ts).
+        O Plugin Principal "escreve" o conteúdo necessário (ex: um sumário em formato Markdown).
+        O Plugin Principal usa a API do Joplin (ex: joplin.data.put) para inserir ou atualizar esse Markdown no corpo da nota.
+
+        #### 6.2.5. Plano de Testes Incrementais (Fase Atual)
+        
+        - Objetivo é validar os pontos críticos da nova arquitetura com testes mínimos antes de implementar a funcionalidade completa.
+        - regra para os testes
+            - arquivos existentes do projeto podem ser consumidos e copiados, mas não devem ser refatorados para os testes
+            - usar pasta `\refat` para arquivos criados para os testes
+        - TESTE 1: Renderização e Estilo (Nosso Próximo Passo)
+            - Tarefa: Interceptar a renderização de todos os cabeçalhos H1 (# Titulo), adicionar uma classe CSS customizada (h1-customizado) e, através de um arquivo CSS injetado, alterar sua cor para vermelho.
+            - Valida: A capacidade de usar MarkdownItPlugin e de registrar assets (CSS).
+        - TESTE 2: Comunicação (Script -> Plugin)
+            - Tarefa: Adicionar um botão ao lado de cada H1 renderizado. Ao clicar, o Content Script enviará uma mensagem para o Plugin Principal, que a registrará no console do Joplin.
+            - Valida: A comunicação da webview para o plugin (postMessage / onMessage).
+
+        #### 6.2.6. Estado Atual do Código:
+
+        O projeto está estruturado para a abordagem antiga (painel/webview). Iniciaremos a refatoração para alinhar com a nova arquitetura de Content Scripts a partir do TESTE 1.
+</details></details>
 
 <details>
 <summary><h2 style="display: inline">5. Implantação (Revisado)</h2></summary>
@@ -298,90 +375,3 @@
   - Tarefas:
       1. Implementar e testar o gatilho `onNoteChange` para chamar a função `refreshPanelForSelectedNote`.
 </details></details>
-
-<details open>
-<summary><h2 style="display: inline">6. Refatoração e Teste da Arquitetura de Content Scripts</h2></summary>
-
-<details>
-<summary><h3 style="display: inline">6.1. Analise</h3></summary>
-
-- fold
-    #### Pontos Críticos da Combinação (usando Content Scripts)
-
-    Baseado na nossa investigação, os principais desafios técnicos (pontos críticos) para fazer essa combinação de funcionalidades funcionar são:
-
-    **Acesso e "Timing":** Como e, principalmente, quando nosso script acessa o HTML da nota? Precisamos ter certeza que o conteúdo já foi totalmente renderizado pelo Joplin antes de tentarmos manipulá-lo.
-    **Manipulação Segura do DOM:** Como podemos modificar o HTML (adicionar um sumário, envolver seções em divs) sem quebrar funcionalidades nativas do Joplin, como a sincronização de rolagem entre o editor e o visualizador?
-    **Comunicação Bidirecional:** Como o content script (que roda na webview) envia dados de volta para o plugin (que roda no processo principal)? Por exemplo, para informar sobre a estrutura da nota. E como o plugin envia configurações para o content script?
-    **Estilização Isolada**: Como aplicamos nosso CSS customizado nos elementos que criamos sem afetar ou sermos afetados negativamente pelo tema atual do Joplin (claro, escuro, etc.)?
-
-    #### Pesquisa por Soluções nos Documentos
-
-    A boa notícia é que a documentação e o plugin de exemplo que analisamos já nos dão pistas claras para cada um desses pontos:
-
-    **Acesso e "Timing":** O modelo do MarkdownItPlugin é a solução. Ele nos permite registrar uma função que é chamada durante o processo de renderização do Joplin. Isso garante que nosso código execute no momento exato em que o HTML está sendo gerado, nos dando controle total.
-    Manipulação Segura do DOM: O exemplo markdownItTestPlugin.ts mostra como substituir as regras de renderização. Em vez de manipular o DOM depois, nós geramos o HTML correto diretamente. Para os nossos objetivos, podemos, por exemplo, criar uma regra que renderiza os cabeçalhos (#, ##) não apenas como <h1>, <h2>, mas já envolvendo-os em divs com IDs, preparando o terreno para nossas outras funcionalidades.
-    **Comunicação Bidirecional:**
-    Script -> Plugin: O exemplo mostra a função joplinContentScriptPostMessage('ID_DO_SCRIPT', MENSAGEM). Podemos usá-la para enviar dados.
-    Plugin -> Script: A comunicação nesse sentido é mais simples. O plugin pode passar dados ao registrar o script ou ao definir o HTML, mas a forma mais elegante é o script pedir dados ao plugin usando a mesma postMessage.
-    **Estilização Isolada:** O plugin de exemplo tem uma função assets que retorna uma lista de arquivos CSS e JS a serem incluídos na página. Essa é a solução perfeita: criamos um arquivo CSS para nossos componentes e o Joplin o injetará na página.
-    **Persistência:** As soluções devem sempre considerar que a expperiencia do usuario será contínua, tanto entre sessões () quanto entre dispositivos. Para persistencia de estado de abertura de `<details>` foi adotada uma solução não usual de atualizar automaticamente essa informação  de volta no conteudo da nota.
-    **Simplicidade e Aprendizado:** Lembrar sempre que este é um projeto de uso individual, o plugin não será publicado, e que também tem o objetivo de aprendizado do desenvolvedor. Algumas otimizações e seguranças não são necessárias. O código deve ser claro, direto e com funções que possam ser facilmente relacionadas às funcionalidades do plugin, evitando complexidade desnecessária para facilitar o entendimento e a manutenção.
-
-    #### Testes Simples
-
-    Para validar essas soluções em nosso plugin, sugiro implementarmos os seguintes testes mínimos, um de cada vez:
-
-    ##### Teste de Renderização e Estilo:
-
-    Objetivo: Provar que conseguimos interceptar a renderização de um elemento e aplicar um estilo customizado.
-    Implementação: Usar a API de ContentScript como um MarkdownItPlugin para encontrar todos os cabeçalhos de nível 1 (# Titulo) e adicionar uma classe CSS meu-h1-custom. Ao mesmo tempo, registrar um arquivo meu-estilo.css que define meu-h1-custom { color: red; }.
-    Resultado Esperado: Todos os títulos H1 na nota renderizada devem aparecer em vermelho.
-    <br>
-
-    ##### Teste de Comunicação (Script -> Plugin):
-
-    Objetivo: Provar que a webview pode enviar uma mensagem para o nosso plugin.
-    Implementação: No MarkdownItPlugin do teste anterior, além de colorir o H1, adicionar um botão <button id="meu-botao">Clique-me</button> abaixo dele. Registrar um script JS que adiciona um listener a esse botão. Ao ser clicado, ele deve chamar joplinContentScriptPostMessage('meu-plugin', 'H1 clicado!'). No index.ts do plugin, usar joplin.contentScripts.onMessage para ouvir essa mensagem e logá-la no console do Joplin (console.info(...)).
-    Resultado Esperado: Ao clicar no botão na nota renderizada, a mensagem "H1 clicado!" deve aparecer no console de desenvolvimento do Joplin.
-</details>
-
-<details open>
-<summary><h3 style="display: inline">6.2. Projeto de Refatoração</h2></summary>
-
-- fold
-    #### 6.2.1. reforço do Objetivo Geral do Projeto
-
-    Aprimorar a funcionalidade das notas no Joplin, adicionando recursos como sumário automático, seções recolhíveis e outras melhorias de formatação.
-    Requisito Chave: As modificações geradas (como um sumário) devem ser persistidas diretamente no corpo do Markdown da nota.
-
-    #### 6.2.2. Arquitetura Decidida:
-
-    Abandonar: A abordagem de "fábrica de HTML", que consiste em criar um painel webview separado (panelManager.js, mainHtml.js, web/).
-    Adotar: A abordagem de Content Scripts, utilizando a API joplin.contentScripts. Esta é a forma nativa e recomendada para modificar a visualização de notas.
-
-
-    #### 6.2.4. Fluxo de Trabalho da Nova Arquitetura:
-
-    Um Content Script (especificamente um MarkdownItPlugin) "lê" a estrutura da nota durante a renderização do Joplin.
-    O script envia a estrutura extraída (ex: lista de cabeçalhos) para o Plugin Principal (index.ts).
-    O Plugin Principal "escreve" o conteúdo necessário (ex: um sumário em formato Markdown).
-    O Plugin Principal usa a API do Joplin (ex: joplin.data.put) para inserir ou atualizar esse Markdown no corpo da nota.
-
-    #### 6.2.5. Plano de Testes Incrementais (Fase Atual)
-    
-    - Objetivo é validar os pontos críticos da nova arquitetura com testes mínimos antes de implementar a funcionalidade completa.
-    - regra para os testes
-        - arquivos existentes do projeto podem ser consumidos e copiados, mas não devem ser refatorados para os testes
-        - usar pasta `\refat` para arquivos criados para os testes
-    - TESTE 1: Renderização e Estilo (Nosso Próximo Passo)
-        - Tarefa: Interceptar a renderização de todos os cabeçalhos H1 (# Titulo), adicionar uma classe CSS customizada (h1-customizado) e, através de um arquivo CSS injetado, alterar sua cor para vermelho.
-        - Valida: A capacidade de usar MarkdownItPlugin e de registrar assets (CSS).
-    - TESTE 2: Comunicação (Script -> Plugin)
-        - Tarefa: Adicionar um botão ao lado de cada H1 renderizado. Ao clicar, o Content Script enviará uma mensagem para o Plugin Principal, que a registrará no console do Joplin.
-        - Valida: A comunicação da webview para o plugin (postMessage / onMessage).
-
-    #### 6.2.6. Estado Atual do Código:
-
-    O projeto está estruturado para a abordagem antiga (painel/webview). Iniciaremos a refatoração para alinhar com a nova arquitetura de Content Scripts a partir do TESTE 1.
-</details>
