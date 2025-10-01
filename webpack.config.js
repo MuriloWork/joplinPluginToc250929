@@ -184,7 +184,7 @@ const baseConfig = {
             {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
-                exclude: /node_modules/,
+                exclude: [/node_modules/, /bkp/],
             },
         ],
     },
@@ -224,6 +224,11 @@ const pluginConfig = {
                 },
                 {
                     from: 'web/**/*',
+                    context: path.resolve(__dirname),
+                    to: path.resolve(__dirname, 'dist'),
+                },
+                {
+                    from: 'refat/**/*',
                     context: path.resolve(__dirname),
                     to: path.resolve(__dirname, 'dist'),
                 },
