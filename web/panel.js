@@ -1,5 +1,3 @@
-// web/panel.js - optional extra frontend logic (if you prefer separate file)
-// This file can be included via <script src="panel.js"></script> in index.html instead of inline script.
 
 (function () {
     function onMessage(msg) {
