@@ -39,7 +39,7 @@ export default function (context: { contentScriptId: string }) {
                 const token = tokens[idx];
                 if (token.tag === 'h1') {
                     // Adiciona um botão de teste ao lado do título
-                    const testButton = `<button class="md-panel-test-button">Test</button>`;
+                    const testButton = `<button class="md-panel-test-button" data-content-script-id="${context.contentScriptId}">Test</button>`;
                     // Fecha a tag do título, adiciona o botão e fecha a tag do sumário
                     return `${defaultHeadingClose(tokens, idx, options, env, self)} ${testButton}</summary>`;
                 }
