@@ -1,3 +1,5 @@
 {
-	"extraScripts": []
+    "extraScripts": [
+        "content_scripts/sectionHandler.ts"
+    ]
 }

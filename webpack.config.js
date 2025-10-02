@@ -173,8 +173,6 @@ function onBuildCompleted() {
     }
 }
 
-const webviewHtml = fs.readFileSync(path.resolve(rootDir, 'web', 'index.html'), 'utf8');
-
 const baseConfig = {
     mode: 'production',
     target: 'node',
@@ -210,33 +208,19 @@ const pluginConfig = {
         new CopyPlugin({
             patterns: [
                 {
+                    // Copia todos os arquivos de 'src' para 'dist', mantendo a estrutura de pastas.
                     from: '**/*',
                     context: path.resolve(__dirname, 'src'),
                     to: path.resolve(__dirname, 'dist'),
                     globOptions: {
                         ignore: [
-                            // All TypeScript files are compiled to JS and
-                            // already copied into /dist so we don't copy them.
+                            // Ignora os arquivos TypeScript, pois eles serão compilados pelo ts-loader e pelo 'extraScripts'.
                             '**/*.ts',
                             '**/*.tsx',
                         ],
                     },
                 },
-                {
-                    from: 'web/**/*',
-                    context: path.resolve(__dirname),
-                    to: path.resolve(__dirname, 'dist'),
-                },
-                {
-                    from: 'refat/**/*',
-                    context: path.resolve(__dirname),
-                    to: path.resolve(__dirname, 'dist'),
-                },
             ],
-        }),
-        new webpack.DefinePlugin({
-            // Inject the HTML content as a global string
-            __JOPLIN_WEBVIEW_HTML__: JSON.stringify(webviewHtml),
         }),
     ]
 };

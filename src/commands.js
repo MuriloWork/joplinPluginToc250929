@@ -1,29 +1,52 @@
-// src/commands.js
-// Registers a simple test command that toggles the first heading of the selected note
+import joplin from 'api';
+import MarkdownIt from 'markdown-it';
+import fs from 'fs';
+import path from 'path';
+import sectionHandler from './content_scripts/sectionHandler';
 
-const parser = require('./api/parser');
-const slugUtil = require('./api/slug');
-const noteSync = require('./api/noteSync');
+const DEBUG_COMMAND_NAME = 'debug.renderNoteToHtml';
 
-async function registerCommands() {
+/**
+ * Registra os comandos da aplicação.
+ */
+export async function registerCommands() {
     await joplin.commands.register({
-        name: 'mdpanel.toggleTest',
-        label: 'Toggle first heading open (test)'
-    });
+        name: DEBUG_COMMAND_NAME,
+        label: 'Debug: Render Note to HTML File',
+        iconName: 'fas fa-bug',
+        execute: async () => {
+            try {
+                const note = await joplin.workspace.selectedNote();
+                if (!note) {
+                    console.warn('MDPanel Debug: No note selected.');
+                    await joplin.views.dialogs.showMessageBox('Please select a note first.');
+                    return;
+                }
 
-    await joplin.views.menuItems.create('mdpanelToggleTest', 'mdpanel.toggleTest', joplin.views.menuItemLocation.Tools);
+                // 1. Instanciar markdown-it
+                const md = new MarkdownIt();
 
-    joplin.commands.registerHandler('mdpanel.toggleTest', async () => {
-        const note = await joplin.workspace.selectedNote();
-        if (!note) return;
-        const tokens = parser.parseToTokens(note.body || '');
-        const headings = parser.extractHeadings(tokens);
-        if (!headings.length) return;
-        const first = headings[0];
-        const slug = slugUtil.slugify(first.rawText);
-        const newOpen = !first.hasOpenFlag;
-        noteSync.scheduleToggle(note.id, slug, newOpen);
+                // 2. Carregar nosso plugin
+                const pluginObject = sectionHandler({ contentScriptId: 'debug' });
+                md.use(pluginObject.plugin);
+
+                // 3. Renderizar o corpo da nota
+                const env = {}; // O plugin usa 'env' para manter o estado
+                const renderedHtml = md.render(note.body, env);
+
+                // 4. Salvar em um caminho absoluto para a pasta de assets do projeto para depuração.
+                // AVISO: Este caminho só funcionará no seu ambiente de desenvolvimento.
+                const debugFilePath = 'c:\\Users\\muril\\OneDrive\\01 mycloud\\01 sistMu\\10.01 scripts\\2025-09-28 joplin_plugin\\src\\assets\\debug_render.html';
+
+                fs.writeFileSync(debugFilePath, renderedHtml, 'utf8');
+
+                const successMsg = `MDPanel Debug: HTML for note "${note.title}" saved to ${debugFilePath}`;
+                console.info(successMsg);
+                await joplin.views.dialogs.showMessageBox(successMsg);
+            } catch (error) {
+                console.error('MDPanel Debug Error:', error);
+                await joplin.views.dialogs.showMessageBox(`An error occurred during debug rendering: ${error.message}`);
+            }
+        },
     });
 }
-
-module.exports = { registerCommands };
