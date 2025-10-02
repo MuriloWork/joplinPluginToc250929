@@ -1,51 +1,90 @@
 <hr>
 <p>title: markmap
-markmap:
-maxWidth: 300
-colorFreezeLevel: 2
-initialZoom: 1.0
-scale: 1.0
-initialExpandLevel: 5</p>
+    markmap:
+    maxWidth: 300
+    colorFreezeLevel: 2
+    initialZoom: 1.0
+    scale: 1.0
+    initialExpandLevel: 5</p>
 <hr>
-<details class="md-panel-section"><summary><h1>titulo 01.01 - Updated: 10:27:35</h1>
-</summary><p>conteudo 01.01</p>
-</details><details class="md-panel-section"><summary><h1>titulo 01.02 - Updated: 10:27:41</h1>
-</summary><p>conteudo 01.02</p>
-<h2>titulo 02</h2>
-<ul>
-<li>00 idMu
-<ul>
-<li>Id relacionamentos</li>
-<li>inbox</li>
-</ul>
-</li>
-<li>1 todo
-<ul>
-<li>destaques
-<ul>
-<li>2025-02 sistMu</li>
-</ul>
-</li>
-<li>planos</li>
-<li>eventos
-<ul>
-<li>projetos
-<ul>
-<li>workMu, 2025-02 pj servo nerd, work</li>
-<li>2025-04 siteMu</li>
-<li>2024-11 guiadecompras</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h3>titulo 03</h3>
-<p>conteudo 03</p>
-<h4>titulo 04</h4>
-<p>conteudo 04</p>
-<h5>titulo 05</h5>
-<p>conteudo 05</p>
-<h6>titulo 06</h6>
-<p>conteudo 06</p>
+<details class="md-panel" data-content-script-id="debug">
+    <summary>
+        <h1 data-line="11" style="display: inline;">titulo 01.01 [Updated: 12:45:17]</h1>
+    </summary>
+    <p>conteudo 01.01</p>
+</details>
+<details class="md-panel" data-content-script-id="debug" open>
+    <summary>
+        <h1 data-line="15" style="display: inline;">titulo 01.02 [Updated: 12:45:21] open</h1>
+    </summary>
+    <p>conteudo 01.02</p>
+    <details class="md-panel" data-content-script-id="debug" open>
+        <summary>
+            <h2 data-line="19" style="display: inline;">titulo 02 open</h2>
+        </summary>
+        <ul>
+            <li>
+                <details class="md-panel-list" data-content-script-id="debug">
+                    <summary>00 idMu
+                        <ul>
+                            <li>Id relacionamentos</li>
+                            <li>inbox</li>
+                        </ul>
+            </li>
+            <li>
+                <details class="md-panel-list" data-content-script-id="debug">
+                    <summary>1 todo
+                        <ul>
+                            <li>
+                                <details class="md-panel-list" data-content-script-id="debug">
+                                    <summary>destaques
+                                        <ul>
+                                            <li>2025-02 sistMu</li>
+                                        </ul>
+                            </li>
+                            <li>planos</li>
+                            <li>
+                                <details class="md-panel-list" data-content-script-id="debug">
+                                    <summary>eventos
+                                        <ul>
+                                            <li>
+                                                <details class="md-panel-list" data-content-script-id="debug">
+                                                    <summary>projetos
+                                                        <ul>
+                                                            <li>workMu, 2025-02 pj servo nerd, work</li>
+                                                            <li>2025-04 siteMu</li>
+                                                            <li>2024-11 guiadecompras</li>
+                                                        </ul>
+                                            </li>
+                                        </ul>
+                            </li>
+                        </ul>
+            </li>
+        </ul>
+        <details class="md-panel" data-content-script-id="debug" open>
+            <summary>
+                <h3 data-line="34" style="display: inline;">titulo 03 open</h3>
+            </summary>
+            <p>conteudo 03</p>
+            <details class="md-panel" data-content-script-id="debug" open>
+                <summary>
+                    <h4 data-line="38" style="display: inline;">titulo 04 open</h4>
+                </summary>
+                <p>conteudo 04</p>
+                <details class="md-panel" data-content-script-id="debug">
+                    <summary>
+                        <h5 data-line="42" style="display: inline;">titulo 05</h5>
+                    </summary>
+                    <p>conteudo 05</p>
+                    <details class="md-panel" data-content-script-id="debug">
+                        <summary>
+                            <h6 data-line="46" style="display: inline;">titulo 06</h6>
+                        </summary>
+                        <p>conteudo 06</p>
+                        <p>&lt;!-- Teste de comunicação OK --&gt;</p>
+                    </details>
+                </details>
+            </details>
+        </details>
+    </details>
+</details>

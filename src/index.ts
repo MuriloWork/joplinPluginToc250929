@@ -20,25 +20,33 @@ joplin.plugins.register({
 
         // Ouvir por mensagens vindas do Content Script
         await joplin.contentScripts.onMessage(CONTENT_SCRIPT_ID, async (message: any) => {
-            if (message.command === 'testButtonClick') {
-                console.log(`MDPanel: Message received from content script for H1: "${message.content}"`);
+            if (message.command === 'sectionToggled') {
+                console.log(`MDPanel: Section on line ${message.line} toggled to: ${message.isOpen ? 'open' : 'closed'}`);
 
                 const currentNote = await joplin.workspace.selectedNote();
-                if (currentNote) {
-                    const lines = currentNote.body.split('\n');
-                    // Encontra o índice da linha que é um H1 e contém o texto do botão clicado.
-                    const lineIndex = lines.findIndex(line => line.trim().startsWith('# ') && line.includes(message.content));
+                if (!currentNote) return;
 
-                    if (lineIndex !== -1) {
-                        const timestamp = new Date().toLocaleTimeString();
-                        lines[lineIndex] = `${lines[lineIndex]} [Updated: ${timestamp}]`;
+                const lineIndex = parseInt(message.line, 10);
+                if (isNaN(lineIndex)) return; // Ignora se a linha não for um número válido
 
-                        const newBody = lines.join('\n');
-                        await joplin.data.put(['notes', currentNote.id], null, { body: newBody });
-                        console.log(`MDPanel: Successfully edited line ${lineIndex}.`);
+                const lines = currentNote.body.split('\n');
+                if (lineIndex < lines.length) {
+                    let line = lines[lineIndex];
+                    const wasOpen = line.trim().endsWith(' open');
+
+                    if (message.isOpen && !wasOpen) {
+                        // Adiciona ' open' se a seção foi aberta e a palavra-chave não estava lá
+                        lines[lineIndex] = line + ' open';
+                    } else if (!message.isOpen && wasOpen) {
+                        // Remove ' open' se a seção foi fechada e a palavra-chave estava lá
+                        lines[lineIndex] = line.replace(/\s*open$/, '');
                     } else {
-                        console.warn(`MDPanel: Could not find line for H1: "${message.content}".`);
+                        return; // Não faz nada se o estado já estiver correto
                     }
+
+                    const newBody = lines.join('\n');
+                    await joplin.data.put(['notes', currentNote.id], null, { body: newBody });
+                    console.log(`MDPanel: Note updated for line ${lineIndex}.`);
                 }
             }
             return 'Message processed';

@@ -393,13 +393,13 @@
     - Etapa 6 — Implementação das Seções (Listas)
         - objetivo: Adicionar a funcionalidade de transformar listas em seções recolhíveis, similar aos cabeçalhos.
         - tarefas:
-            - Modificar o `sectionHandler.ts` para interceptar a renderização de listas (`bullet_list_open`, `ordered_list_open`).
-            - Envolver as listas em tags `<details>`, usando o primeiro item como `<summary>`.
-            - Implementar a lógica de persistência para listas, usando a palavra-chave ` open` no final do primeiro item.
+            - Modificar o `sectionHandler.ts` para interceptar a renderização das listas (`bullet_list_open`, `ordered_list_open`) existentes no documento.
+            - Envolver todos os itens da listas que tenham filhos em tags `<details>``<summary>`.
+            - Implementar a lógica de persistência para listas, usando a palavra-chave ` open` no final do conteudo de todos os itens com filhos.
             - Atualizar o `toggle-handler.js` para gerenciar o clique em `summary` de listas.
         - verificação:
-            - Listas na visualização aparecem como seções `<details>` recolhíveis.
-            - Clicar no `summary` da lista adiciona/remove ` open` no primeiro item da lista no markdown.
+            - Todas as listas na visualização aparecem completamente recolhíveis.
+            - Clicar no `summary` da lista adiciona/remove ` open` no texto do item da lista no markdown.
     - Etapa 7 — Leitura do Estado `open`
         - objetivo: Fazer com que as seções já apareçam abertas se a palavra `open` estiver no título do markdown.
         - tarefas:

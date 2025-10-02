@@ -345,57 +345,101 @@
 <summary><h3 style="display: inline">5.1. Etapas</h3></summary>
 
 - plano atual
-    - Etapa 1 — Renderização básica da view
-        - objetivo: Validar a nova arquitetura, fazendo o painel exibir o conteúdo da nota com o CSS e JS embutidos.
+    - Etapa 1 — Configuração e Limpeza
+        - objetivo: Limpar a arquitetura de painel antiga e configurar a base para a nova abordagem de `Content Script`.
         - tarefas:
-            - Depurar `src/ui/mainHtml.js` para garantir que o conteúdo dos arquivos de `web/` (CSS, JS) seja lido e inserido corretamente como tags `<style>` e `<script>` no HTML final.
-            - Garantir que `src/ui/panelManager.js` chame `mainHtml.js` e use `setHtml()` para carregar o resultado no painel.
+            - Remover os diretórios `src/ui/` e `web/`.
+            - Reescrever `index.ts` para registrar um `Content Script` básico do tipo `MarkdownItPlugin`.
+            - Criar o arquivo `src/content_scripts/sectionHandler.ts` como um placeholder.
+            - Limpar `webpack.config.js` e `commands.js` de referências à arquitetura antiga.
         - verificação:
-            - Ao abrir o painel, o conteúdo da nota selecionada deve ser exibido.
-            - O estilo definido em `web/styles.css` (cores, fontes) deve ser visível no painel.
-            - Mensagens de log do `web/panel.js` devem aparecer no console de desenvolvimento do Joplin.
-    - Etapa 2 — Implementação das seções recolhíveis (client-side)
-        - objetivo: Processar o markdown da nota para transformar os títulos em seções `<details>` que o usuário pode expandir e recolher na view.
+            - O plugin compila e carrega no Joplin sem erros.
+            - O console de desenvolvimento do Joplin exibe uma mensagem confirmando que o `MarkdownItPlugin` foi carregado.
+    - Etapa 2 — Renderização Simples e Estilo
+        - objetivo: Provar que conseguimos interceptar a renderização de um elemento e aplicar um estilo customizado.
         - tarefas:
-            - Integrar os módulos `parser.js` e `sectioner.js` no fluxo de atualização do painel.
-            - Ao carregar o painel, o conteúdo da nota (`note.body`) deve ser passado por esses módulos para gerar o HTML com a estrutura de `<details>` e `<summary>`.
-            - O HTML resultante deve ser enviado para o painel.
+            - Implementar a lógica em `sectionHandler.ts` para interceptar a renderização de títulos `H1` e envolvê-los em uma tag `<details>`.
+            - Criar um arquivo `src/assets/section-styles.css` e registrá-lo no `Content Script` para estilizar os novos elementos.
         - verificação:
-            - Os títulos no painel devem ser clicáveis.
-            - Clicar em um título deve expandir ou recolher o conteúdo abaixo dele, até o próximo título de mesmo nível.
-    - Etapa 3 — Comunicação do painel para o plugin
-        - objetivo: Fazer com que o painel notifique o plugin principal sempre que o usuário alterar o estado (aberto/fechado) de uma seção.
+            - Na visualização de nota do Joplin, todos os títulos `H1` aparecem como seções `<details>` recolhíveis e com o estilo customizado aplicado.
+    - Etapa 3 — Depuração da Renderização HTML
+        - objetivo: Criar uma ferramenta de depuração para extrair o HTML renderizado pelo nosso plugin e salvá-lo em um arquivo para inspeção.
         - tarefas:
-            - Em `web/panel.js`, adicionar um listener de eventos (`toggle`) para todas as tags `<details>`.
-            - Quando um evento for disparado, obter um identificador único da seção (o "slug" do título) e seu novo estado.
-            - Usar `webviewApi.postMessage()` para enviar esses dados ao plugin.
-            - Em `src/ui/panelManager.js`, registrar um listener `onMessage` para receber e registrar a mensagem no console.
+            - Criar um novo comando (ex: `debug.renderNoteToHtml`) em `commands.js`.
+            - A lógica do comando irá:
+                - Obter o corpo da nota selecionada.
+                - Instanciar o `markdown-it` localmente, carregar nosso plugin `sectionHandler` e renderizar o corpo da nota para uma string HTML.
+                - Salvar a string HTML em um arquivo (ex: `debug_render.html`) na raiz do projeto.
         - verificação:
-            - Ao expandir ou recolher uma seção no painel, uma mensagem de log com o slug do título e o estado (`{ slug: 'titulo-da-secao', isOpen: true }`) deve aparecer no console de desenvolvimento do Joplin.
-    - Etapa 4 — Persistência do estado no markdown
-        - objetivo: Salvar o estado aberto/fechado de uma seção diretamente no corpo da nota.
+            - Executar o novo comando pela paleta de comandos do Joplin.
+            - Um arquivo `debug_render.html` é criado na raiz do projeto, permitindo inspecionar o HTML gerado em um navegador.
+    - Etapa 4 — Comunicação e Persistência (Teste com Botão)
+        - objetivo: Validar o ciclo completo de comunicação (da visualização para o plugin) e a persistência da alteração na nota.
         - tarefas:
-            - No listener `onMessage` do `panelManager.js`, invocar a lógica de `noteSync.js` e `patcher.js`.
-            - O `patcher.js` deverá encontrar a linha do título correspondente no markdown e adicionar ou remover a palavra-chave ` open` no final dela.
-            - `noteSync.js` salvará o corpo da nota modificado.
+            - Modificar o `sectionHandler.ts` para adicionar um botão de teste ao lado de cada `H1` renderizado.
+            - Criar e registrar um arquivo `src/assets/toggle-handler.js` que, ao clicar no botão, envia uma mensagem para o plugin via `webviewApi.postMessage`.
+            - Em `index.ts`, ouvir a mensagem com `joplin.contentScripts.onMessage` e, ao recebê-la, usar a API do Joplin para adicionar um texto de confirmação ao final da nota.
         - verificação:
-            - Altere o estado de uma seção no painel.
-            - Verifique o arquivo markdown da nota: a palavra ` open` deve ter sido adicionada ou removida da linha do título correspondente.
-            - Feche e reabra o painel; a seção deve manter o estado que você deixou.
-    - Etapa 5 — Sincronização com edições externas
-        - objetivo: Garantir que o painel atualize automaticamente se a nota for modificada no editor principal do Joplin.
+            - Clicar no botão de teste na visualização da nota faz com que um texto (ex: "Teste OK!") seja adicionado ao corpo do markdown da nota.
+    - Etapa 5 — Implementação Completa das Seções (Headings)
+        - objetivo: Expandir a lógica para todos os níveis de título e usar o clique nativo do `<summary>`.
         - tarefas:
-            - Em `src/index.ts`, usar o evento `joplin.workspace.onNoteChange` para detectar modificações na nota atual.
-            - Quando o evento disparar, chamar a função que atualiza o painel, recarregando e reprocessando o conteúdo da nota.
+            - Substituir o botão de teste pela lógica de clique nativa do `<summary>` no `toggle-handler.js`.
+            - Expandir a lógica do `sectionHandler.ts` para funcionar com todos os níveis de título (H1-H6), utilizando a lógica do `sectioner.js` para garantir o aninhamento correto.
+            - Implementar a lógica de persistência que adiciona/remove a palavra-chave ` open` no markdown.
         - verificação:
-            - Com o painel aberto, edite um título ou adicione/remova a palavra ` open` manualmente no editor de markdown.
-            - O painel deve refletir a mudança quase que instantaneamente.
-    - Etapa 6 — Comando de geração do sumário (TOC)
+            - Todos os títulos na visualização são seções `<details>` aninhadas corretamente.
+            - Clicar em um título para abrir/fechar a seção adiciona/remove a palavra ` open` da linha correspondente no editor de markdown.
+    - Etapa 6 — Implementação das Seções (Listas)
+        - objetivo: Adicionar a funcionalidade de transformar listas em seções recolhíveis, similar aos cabeçalhos.
+        - tarefas:
+            - Modificar o `sectionHandler.ts` para interceptar a renderização das listas (`bullet_list_open`, `ordered_list_open`) existentes no documento.
+            - Envolver todos os itens da listas que tenham filhos em tags `<details>``<summary>`.
+            - Implementar a lógica de persistência para listas, usando a palavra-chave ` open` no final do conteudo de todos os itens com filhos.
+            - Atualizar o `toggle-handler.js` para gerenciar o clique em `summary` de listas.
+        - verificação:
+            - Todas as listas na visualização aparecem completamente recolhíveis.
+            - Clicar no `summary` da lista adiciona/remove ` open` no texto do item da lista no markdown.
+    - Etapa 7 — Leitura do Estado `open`
+        - objetivo: Fazer com que as seções já apareçam abertas se a palavra `open` estiver no título do markdown.
+        - tarefas:
+            - No `MarkdownItPlugin`, ao encontrar um título, verificar se o texto original no markdown contém a palavra-chave ` open`.
+            - Se contiver, adicionar o atributo `open` à tag `<details>` (`<details open>`).
+        - verificação:
+            - Títulos no markdown que terminam com ` open` fazem com que a seção correspondente já apareça expandida na visualização.
+    - Etapa 8 — Comando de Geração do Sumário (TOC)
+        - objetivo: Criar um comando que o usuário possa executar para gerar ou atualizar um sumário no topo da nota.
+        - tarefas:
+            - Reativar/revisar o comando `createUpdateToc` em `src/commands.js`.
+            - A lógica do comando usará `parser.js`, `slug.js` e `patcher.js` para inserir o sumário em markdown em um local específico da nota.
+        - verificação:
+            - Executar o novo comando pela paleta de comandos do Joplin insere um sumário com links clicáveis no corpo da nota.
+    - Etapa 9 — Estilização e Leitura do Estado `open`
+        - objetivo: Aplicar estilos customizados e fazer com que as seções já apareçam abertas se a palavra `open` estiver no título do markdown.
+        - tarefas:
+            - Criar um arquivo CSS (ex: `src/assets/section-styles.css`) com os estilos para `<details>` e `<summary>`.
+            - Registrar este CSS como um asset do `Content Script` em `index.ts`.
+            - No `MarkdownItPlugin`, ao encontrar um título, verificar se o texto original no markdown contém a palavra-chave ` open`.
+            - Se contiver, adicionar o atributo `open` à tag `<details>` (`<details open>`).
+        - verificação:
+            - As seções recolhíveis devem ter o estilo definido no arquivo CSS.
+            - Títulos no markdown que terminam com ` open` devem fazer com que a seção correspondente já apareça expandida na visualização.
+    - Etapa 10 — Comunicação e Persistência do Estado
+        - objetivo: Salvar o estado (aberto/fechado) de uma seção de volta no arquivo markdown quando o usuário clica nela.
+        - tarefas:
+            - Criar um script JS (ex: `src/assets/toggle-handler.js`) e registrá-lo como um asset do `Content Script`.
+            - No script, adicionar listeners de clique nos `<summary>`. Ao clicar, enviar uma mensagem para o plugin principal via `webviewApi.postMessage` com o slug do título e o novo estado (`open`).
+            - Em `index.ts`, ouvir essas mensagens com `joplin.contentScripts.onMessage`.
+            - Ao receber a mensagem, usar `noteSync.js` e `patcher.js` para encontrar a linha do título no markdown e adicionar/remover a palavra-chave ` open`.
+        - verificação:
+            - Clicar em um título na visualização altera seu estado (abre/fecha).
+            - A palavra ` open` é adicionada ou removida da linha correspondente no editor de markdown.
+            - A mudança persiste ao selecionar outra nota e voltar.
+    - Etapa 11 — Comando de Geração do Sumário (TOC)
         - objetivo: Criar um comando que o usuário possa executar para gerar ou atualizar um sumário (Table of Contents) no topo da nota.
         - tarefas:
-            - Definir um novo comando em `src/commands.js` (ex: `createUpdateToc`).
+            - Reativar/revisar o comando `createUpdateToc` em `src/commands.js`.
             - A lógica do comando usará `parser.js` para extrair todos os títulos, `slug.js` para criar os links, e `patcher.js` para inserir o sumário em markdown em um local específico da nota (ex: após um marcador `<!-- TOC -->`).
-            - `noteSync.js` salvará a alteração.
         - verificação:
             - Executar o novo comando pela paleta de comandos do Joplin.
             - Um sumário com links clicáveis deve ser inserido no corpo da nota.

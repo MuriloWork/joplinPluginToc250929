@@ -30,7 +30,7 @@ const srcDir = path.resolve(rootDir, 'src');
 const publishDir = path.resolve(rootDir, 'publish');
 
 const userConfig = {
-    extraScripts: [],
+    extraScripts: ['content_scripts/sectionHandler.js'],
     ...(fs.pathExistsSync(userConfigPath) ? require(userConfigFilename) : {}),
 };
 
@@ -220,6 +220,7 @@ const pluginConfig = {
                         ignore: [
                             // Ignora os arquivos TypeScript e a pasta de assets (já tratada acima)
                             '**/*.ts',
+                            '**/content_scripts/sectionHandler.js', // Ignora apenas o sectionHandler, que é compilado separadamente
                             '**/*.tsx',
                             '**/assets/**',
                         ],
@@ -302,9 +303,7 @@ function resolveExtraScriptPath(name) {
         output: {
             filename: `${nameNoExt}.js`,
             path: distDir,
-            library: 'default',
-            libraryTarget: 'commonjs',
-            libraryExport: 'default',
+            libraryTarget: 'commonjs2',
         },
     };
 }
