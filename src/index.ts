@@ -21,15 +21,25 @@ joplin.plugins.register({
         // Ouvir por mensagens vindas do Content Script
         await joplin.contentScripts.onMessage(CONTENT_SCRIPT_ID, async (message: any) => {
             if (message.command === 'testButtonClick') {
-                console.log('MDPanel: Message received from content script.');
+                console.log(`MDPanel: Message received from content script to update line: ${message.line}`);
 
                 const note = await joplin.workspace.selectedNote();
                 if (!note) return;
 
-                const newBody = `${note.body}\n\n<!-- Teste de comunicação OK -->`;
+                const lineIndex = parseInt(message.line, 10);
+                if (isNaN(lineIndex)) return 'Invalid line number';
 
-                await joplin.data.put(['notes', note.id], null, { body: newBody });
-                console.log('MDPanel: Note updated successfully.');
+                const lines = note.body.split('\n');
+                if (lineIndex < lines.length) {
+                    const timestamp = new Date().toLocaleTimeString();
+                    lines[lineIndex] = `${lines[lineIndex]} [Updated: ${timestamp}]`;
+
+                    const newBody = lines.join('\n');
+                    await joplin.data.put(['notes', note.id], null, {
+                        body: newBody
+                    });
+                    console.log('MDPanel: Note updated successfully.');
+                }
             }
             return 'Message processed';
         });

@@ -16,10 +16,12 @@ function attachClickHandlers(rootNode) {
             console.log('MDPanel: Test button clicked. Sending message to plugin.');
 
             const contentScriptId = button.dataset.contentScriptId;
+            const line = button.dataset.line;
 
             // Envia uma mensagem para o plugin principal
             webviewApi.postMessage(contentScriptId, {
                 command: 'testButtonClick',
+                line: line,
             });
         });
     }
