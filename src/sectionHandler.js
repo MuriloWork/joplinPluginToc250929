@@ -2,26 +2,29 @@
 
 module.exports = {
     default: function (context) {
+        const contentScriptId = context.contentScriptId;
+        let lastH1Content = '';
+
         return {
-            plugin: function (markdownIt, _options) {
-                const defaultRender = markdownIt.renderer.rules.heading_open || function (tokens, idx, options, env, self) {
+            plugin: function (md, _options) {
+                const defaultHeadingOpen = md.renderer.rules.heading_open || function (tokens, idx, options, env, self) {
                     return self.renderToken(tokens, idx, options);
                 };
-
-                markdownIt.renderer.rules.heading_open = function (tokens, idx, options, env, self) {
-                    const token = tokens[idx];
-                    // Apenas para títulos de nível 1, como no nosso teste
-                    if (token.tag === 'h1') {
-                        // token.map[0] contém o número da linha (base 0) do título no markdown
-                        const lineNumber = token.map[0];
-
-                        const buttonHtml = ` <button class="md-panel-test-button" data-content-script-id="${context.contentScriptId}" data-line="${lineNumber}">Test</button>`;
-
-                        // Retorna a tag de abertura original e adiciona nosso botão ao lado dela.
-                        // O erro estava aqui: o buttonHtml não estava sendo concatenado.
-                        return defaultRender(tokens, idx, options, env, self) + buttonHtml;
+                md.renderer.rules.heading_open = function (tokens, idx, options, env, self) {
+                    if (tokens[idx].tag === 'h1') {
+                        lastH1Content = tokens[idx + 1].content;
                     }
-                    return defaultRender(tokens, idx, options, env, self);
+                    return defaultHeadingOpen(tokens, idx, options, env, self);
+                };
+
+                const defaultHeadingClose = md.renderer.rules.heading_close || function (tokens, idx, options, env, self) { return self.renderToken(tokens, idx, options); };
+                md.renderer.rules.heading_close = function (tokens, idx, options, env, self) {
+                    if (tokens[idx].tag === 'h1') {
+                        const escapedContent = lastH1Content.replace(/'/g, "\'").replace(/"/g, "&quot;");
+                        const buttonHtml = ` <button onclick="sendTestMessage('${contentScriptId}', '${escapedContent}')">Test</button>`;
+                        return buttonHtml + defaultHeadingClose(tokens, idx, options, env, self);
+                    }
+                    return defaultHeadingClose(tokens, idx, options, env, self);
                 };
             },
             assets: function () {

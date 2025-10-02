@@ -1,31 +1,11 @@
 /* eslint-disable no-undef */
 
-document.addEventListener('joplin-noteDidUpdate', () => {
-    attachClickHandlers(document.body);
-});
-
-function attachClickHandlers(rootNode) {
-    const buttons = rootNode.querySelectorAll('.md-panel-test-button:not(._handlerAttached)');
-    for (const button of buttons) {
-        button.classList.add('_handlerAttached');
-        button.addEventListener('click', (event) => {
-            // Impede que o clique no botão também dispare o clique no <summary>
-            event.stopPropagation();
-            event.preventDefault();
-
-            console.log('MDPanel: Test button clicked. Sending message to plugin.');
-
-            const contentScriptId = button.dataset.contentScriptId;
-            const line = button.dataset.line;
-
-            // Envia uma mensagem para o plugin principal
-            webviewApi.postMessage(contentScriptId, {
-                command: 'testButtonClick',
-                line: line,
-            });
+// Esta função será chamada pelo evento onclick do botão injetado.
+function sendTestMessage(contentScriptId, h1Content) {
+    if (webviewApi && webviewApi.postMessage) {
+        webviewApi.postMessage(contentScriptId, {
+            command: 'testButtonClick',
+            content: h1Content,
         });
     }
 }
-
-// Anexa os handlers na carga inicial
-attachClickHandlers(document.body);

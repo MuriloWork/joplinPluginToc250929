@@ -182,7 +182,7 @@ const baseConfig = {
             {
                 test: /\.tsx?$/,
                 use: 'ts-loader',
-                exclude: [/node_modules/, /bkp/],
+                exclude: [/node_modules/, /bkp/, /temp/],
             },
         ],
     },
@@ -207,16 +207,21 @@ const pluginConfig = {
     plugins: [
         new CopyPlugin({
             patterns: [
+                // Regra 1: Copia os arquivos da pasta 'assets' para a raiz de 'dist'
                 {
-                    // Copia todos os arquivos de 'src' para 'dist', mantendo a estrutura de pastas.
+                    from: 'src/assets',
+                    to: distDir,
+                },
+                // Regra 2: Copia outros arquivos da raiz de 'src' para 'dist'
+                {
                     from: '**/*',
                     context: path.resolve(__dirname, 'src'),
-                    to: path.resolve(__dirname, 'dist'),
                     globOptions: {
                         ignore: [
-                            // Ignora os arquivos TypeScript, pois eles serão compilados pelo ts-loader e pelo 'extraScripts'.
+                            // Ignora os arquivos TypeScript e a pasta de assets (já tratada acima)
                             '**/*.ts',
                             '**/*.tsx',
+                            '**/assets/**',
                         ],
                     },
                 },

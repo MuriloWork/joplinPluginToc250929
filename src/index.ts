@@ -12,7 +12,7 @@ joplin.plugins.register({
         await joplin.contentScripts.register(
             ContentScriptType.MarkdownItPlugin,
             CONTENT_SCRIPT_ID,
-            './content_scripts/sectionHandler.js'
+            './sectionHandler.js' // Caminho correto relativo à raiz do plugin após a compilação
         );
 
         // Registrar todos os comandos da aplicação
@@ -21,24 +21,24 @@ joplin.plugins.register({
         // Ouvir por mensagens vindas do Content Script
         await joplin.contentScripts.onMessage(CONTENT_SCRIPT_ID, async (message: any) => {
             if (message.command === 'testButtonClick') {
-                console.log(`MDPanel: Message received from content script to update line: ${message.line}`);
+                console.log(`MDPanel: Message received from content script for H1: "${message.content}"`);
 
-                const note = await joplin.workspace.selectedNote();
-                if (!note) return;
+                const currentNote = await joplin.workspace.selectedNote();
+                if (currentNote) {
+                    const lines = currentNote.body.split('\n');
+                    // Encontra o índice da linha que é um H1 e contém o texto do botão clicado.
+                    const lineIndex = lines.findIndex(line => line.trim().startsWith('# ') && line.includes(message.content));
 
-                const lineIndex = parseInt(message.line, 10);
-                if (isNaN(lineIndex)) return 'Invalid line number';
+                    if (lineIndex !== -1) {
+                        const timestamp = new Date().toLocaleTimeString();
+                        lines[lineIndex] = `${lines[lineIndex]} [Updated: ${timestamp}]`;
 
-                const lines = note.body.split('\n');
-                if (lineIndex < lines.length) {
-                    const timestamp = new Date().toLocaleTimeString();
-                    lines[lineIndex] = `${lines[lineIndex]} [Updated: ${timestamp}]`;
-
-                    const newBody = lines.join('\n');
-                    await joplin.data.put(['notes', note.id], null, {
-                        body: newBody
-                    });
-                    console.log('MDPanel: Note updated successfully.');
+                        const newBody = lines.join('\n');
+                        await joplin.data.put(['notes', currentNote.id], null, { body: newBody });
+                        console.log(`MDPanel: Successfully edited line ${lineIndex}.`);
+                    } else {
+                        console.warn(`MDPanel: Could not find line for H1: "${message.content}".`);
+                    }
                 }
             }
             return 'Message processed';
