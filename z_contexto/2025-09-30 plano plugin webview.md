@@ -138,7 +138,9 @@
                 - Contém a lógica para aplicar as alterações (o sumário gerado ou as tags `<details>`) no corpo do markdown da nota de forma inteligente.
 - configurações
     - API principal: joplin plugin
-    - linguagens: typescript, javascript, nodejs
+    - linguagens:
+        - typescript apenas para `index.ts`
+        - javascript e nodejs para todos os demais scripts
     - bibliotecas: markdown-it
 - dicas e lembretes
     - Mantenha o parser/slug/sectioner bem testados — são o coração da lógica; preferível escrever testes unitários antes de integrar UI.

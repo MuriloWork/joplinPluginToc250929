@@ -1,6 +1,5 @@
 import joplin from 'api';
 import { ContentScriptType } from 'api/types';
-import { registerCommands } from './commands';
 
 const CONTENT_SCRIPT_ID = 'mdPanelSectionHandler';
 
@@ -12,11 +11,8 @@ joplin.plugins.register({
         await joplin.contentScripts.register(
             ContentScriptType.MarkdownItPlugin,
             CONTENT_SCRIPT_ID,
-            './sectionHandler.js' // Caminho correto relativo à raiz do plugin após a compilação
+            './sectionHandler.js'
         );
-
-        // Registrar todos os comandos da aplicação
-        await registerCommands();
 
         // Ouvir por mensagens vindas do Content Script
         await joplin.contentScripts.onMessage(CONTENT_SCRIPT_ID, async (message: any) => {

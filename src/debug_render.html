@@ -1,0 +1,2704 @@
+<html lang="en-US">
+
+<head>
+    <style>
+        .ͼ1.cm-focused {
+            outline: 1px dotted #212121;
+        }
+
+        .ͼ1 {
+            position: relative !important;
+            box-sizing: border-box;
+            display: flex !important;
+            flex-direction: column;
+        }
+
+        .ͼ1 .cm-scroller {
+            display: flex !important;
+            align-items: flex-start !important;
+            font-family: monospace;
+            line-height: 1.4;
+            height: 100%;
+            overflow-x: auto;
+            position: relative;
+            z-index: 0;
+            overflow-anchor: none;
+        }
+
+        .ͼ1 .cm-content[contenteditable=true] {
+            -webkit-user-modify: read-write-plaintext-only;
+        }
+
+        .ͼ1 .cm-content {
+            margin: 0;
+            flex-grow: 2;
+            flex-shrink: 0;
+            display: block;
+            white-space: pre;
+            word-wrap: normal;
+            box-sizing: border-box;
+            min-height: 100%;
+            padding: 4px 0;
+            outline: none;
+        }
+
+        .ͼ1 .cm-lineWrapping {
+            white-space: pre-wrap;
+            white-space: break-spaces;
+            word-break: break-word;
+            overflow-wrap: anywhere;
+            flex-shrink: 1;
+        }
+
+        .ͼ2 .cm-content {
+            caret-color: black;
+        }
+
+        .ͼ3 .cm-content {
+            caret-color: white;
+        }
+
+        .ͼ1 .cm-line {
+            display: block;
+            padding: 0 2px 0 6px;
+        }
+
+        .ͼ1 .cm-layer>* {
+            position: absolute;
+        }
+
+        .ͼ1 .cm-layer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            contain: size style;
+        }
+
+        .ͼ2 .cm-selectionBackground {
+            background: #d9d9d9;
+        }
+
+        .ͼ3 .cm-selectionBackground {
+            background: #222;
+        }
+
+        .ͼ2.cm-focused>.cm-scroller>.cm-selectionLayer .cm-selectionBackground {
+            background: #d7d4f0;
+        }
+
+        .ͼ3.cm-focused>.cm-scroller>.cm-selectionLayer .cm-selectionBackground {
+            background: #233;
+        }
+
+        .ͼ1 .cm-cursorLayer {
+            pointer-events: none;
+        }
+
+        .ͼ1.cm-focused>.cm-scroller>.cm-cursorLayer {
+            animation: steps(1) cm-blink 1.2s infinite;
+        }
+
+        @keyframes cm-blink {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        @keyframes cm-blink2 {
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .ͼ1 .cm-cursor,
+        .ͼ1 .cm-dropCursor {
+            border-left: 1.2px solid black;
+            margin-left: -0.6px;
+            pointer-events: none;
+        }
+
+        .ͼ1 .cm-cursor {
+            display: none;
+        }
+
+        .ͼ3 .cm-cursor {
+            border-left-color: #ddd;
+        }
+
+        .ͼ1 .cm-dropCursor {
+            position: absolute;
+        }
+
+        .ͼ1.cm-focused>.cm-scroller>.cm-cursorLayer .cm-cursor {
+            display: block;
+        }
+
+        .ͼ1 .cm-iso {
+            unicode-bidi: isolate;
+        }
+
+        .ͼ1 .cm-announced {
+            position: fixed;
+            top: -10000px;
+        }
+
+        @media print {
+            .ͼ1 .cm-announced {
+                display: none;
+            }
+        }
+
+        .ͼ2 .cm-activeLine {
+            background-color: #cceeff44;
+        }
+
+        .ͼ3 .cm-activeLine {
+            background-color: #99eeff33;
+        }
+
+        .ͼ2 .cm-specialChar {
+            color: red;
+        }
+
+        .ͼ3 .cm-specialChar {
+            color: #f78;
+        }
+
+        .ͼ1 .cm-gutters {
+            flex-shrink: 0;
+            display: flex;
+            height: 100%;
+            box-sizing: border-box;
+            inset-inline-start: 0;
+            z-index: 200;
+        }
+
+        .ͼ2 .cm-gutters {
+            background-color: #f5f5f5;
+            color: #6c6c6c;
+            border-right: 1px solid #ddd;
+        }
+
+        .ͼ3 .cm-gutters {
+            background-color: #333338;
+            color: #ccc;
+        }
+
+        .ͼ1 .cm-gutter {
+            display: flex !important;
+            flex-direction: column;
+            flex-shrink: 0;
+            box-sizing: border-box;
+            min-height: 100%;
+            overflow: hidden;
+        }
+
+        .ͼ1 .cm-gutterElement {
+            box-sizing: border-box;
+        }
+
+        .ͼ1 .cm-lineNumbers .cm-gutterElement {
+            padding: 0 3px 0 5px;
+            min-width: 20px;
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .ͼ2 .cm-activeLineGutter {
+            background-color: #e2f2ff;
+        }
+
+        .ͼ3 .cm-activeLineGutter {
+            background-color: #222227;
+        }
+
+        .ͼ1 .cm-panels {
+            box-sizing: border-box;
+            position: sticky;
+            left: 0;
+            right: 0;
+            z-index: 300;
+        }
+
+        .ͼ2 .cm-panels {
+            background-color: #f5f5f5;
+            color: black;
+        }
+
+        .ͼ2 .cm-panels-top {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .ͼ2 .cm-panels-bottom {
+            border-top: 1px solid #ddd;
+        }
+
+        .ͼ3 .cm-panels {
+            background-color: #333338;
+            color: white;
+        }
+
+        .ͼ1 .cm-tab {
+            display: inline-block;
+            overflow: hidden;
+            vertical-align: bottom;
+        }
+
+        .ͼ1 .cm-widgetBuffer {
+            vertical-align: text-top;
+            height: 1em;
+            width: 0;
+            display: inline;
+        }
+
+        .ͼ1 .cm-placeholder {
+            color: #888;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .ͼ1 .cm-highlightSpace {
+            background-image: radial-gradient(circle at 50% 55%, #aaa 20%, transparent 5%);
+            background-position: center;
+        }
+
+        .ͼ1 .cm-highlightTab {
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="20"><path stroke="%23888" stroke-width="1" fill="none" d="M1 10H196L190 5M190 15L196 10M197 4L197 16"/></svg>');
+            background-size: auto 100%;
+            background-position: right 90%;
+            background-repeat: no-repeat;
+        }
+
+        .ͼ1 .cm-trailingSpace {
+            background-color: #ff332255;
+        }
+
+        .ͼ1 .cm-button {
+            vertical-align: middle;
+            color: inherit;
+            font-size: 70%;
+            padding: .2em 1em;
+            border-radius: 1px;
+        }
+
+        .ͼ2 .cm-button:active {
+            background-image: linear-gradient(#b4b4b4, #d0d3d6);
+        }
+
+        .ͼ2 .cm-button {
+            background-image: linear-gradient(#eff1f5, #d9d9df);
+            border: 1px solid #888;
+        }
+
+        .ͼ3 .cm-button:active {
+            background-image: linear-gradient(#111, #333);
+        }
+
+        .ͼ3 .cm-button {
+            background-image: linear-gradient(#393939, #111);
+            border: 1px solid #888;
+        }
+
+        .ͼ1 .cm-textfield {
+            vertical-align: middle;
+            color: inherit;
+            font-size: 70%;
+            border: 1px solid silver;
+            padding: .2em .5em;
+        }
+
+        .ͼ2 .cm-textfield {
+            background-color: white;
+        }
+
+        .ͼ3 .cm-textfield {
+            border: 1px solid #555;
+            background-color: inherit;
+        }
+
+        .ͼ1 .cm-panel.cm-search [name=close] {
+            position: absolute;
+            top: 0;
+            right: 4px;
+            background-color: inherit;
+            border: none;
+            font: inherit;
+            padding: 0;
+            margin: 0;
+        }
+
+        .ͼ1 .cm-panel.cm-search input,
+        .ͼ1 .cm-panel.cm-search button,
+        .ͼ1 .cm-panel.cm-search label {
+            margin: .2em .6em .2em 0;
+        }
+
+        .ͼ1 .cm-panel.cm-search input[type=checkbox] {
+            margin-right: .2em;
+        }
+
+        .ͼ1 .cm-panel.cm-search label {
+            font-size: 80%;
+            white-space: pre;
+        }
+
+        .ͼ1 .cm-panel.cm-search {
+            padding: 2px 6px 4px;
+            position: relative;
+        }
+
+        .ͼ2 .cm-searchMatch {
+            background-color: #ffff0054;
+        }
+
+        .ͼ3 .cm-searchMatch {
+            background-color: #00ffff8a;
+        }
+
+        .ͼ2 .cm-searchMatch-selected {
+            background-color: #ff6a0054;
+        }
+
+        .ͼ3 .cm-searchMatch-selected {
+            background-color: #ff00ff8a;
+        }
+
+        .ͼ2d .cm-search-marker *,
+        .ͼ2d .cm-search-marker {
+            color: black;
+            background-color: #F7D26E;
+        }
+
+        .ͼ2d .cm-search-marker-selected *,
+        .ͼ2d .cm-search-marker-selected {
+            background: #131313 !important;
+            color: #ffffff !important;
+        }
+
+        .ͼ2c .cm-scroller {
+            overflow: auto;
+        }
+
+        .ͼ2c.CodeMirror {
+            height: unset;
+            background: unset;
+            overflow: unset;
+            direction: unset;
+        }
+
+        .ͼ1d .cm-search-marker *,
+        .ͼ1d .cm-search-marker {
+            color: black;
+            background-color: #F7D26E;
+        }
+
+        .ͼ1d .cm-search-marker-selected *,
+        .ͼ1d .cm-search-marker-selected {
+            background: #131313 !important;
+            color: #ffffff !important;
+        }
+
+        .ͼ1c .cm-scroller {
+            overflow: auto;
+        }
+
+        .ͼ1c.CodeMirror {
+            height: unset;
+            background: unset;
+            overflow: unset;
+            direction: unset;
+        }
+
+        .ͼt.-overwrite .cm-cursor {
+            border-left-width: 0.5em;
+        }
+
+        .ͼ2b.-ctrl-or-cmd-pressed .cm-taskMarker {
+            cursor: pointer;
+        }
+
+        .ͼ2a.-ctrl-or-cmd-pressed .cm-url,
+        .ͼ2a.-ctrl-or-cmd-pressed .tok-link {
+            cursor: pointer;
+        }
+
+        .ͼ1b.-ctrl-or-cmd-pressed .cm-taskMarker {
+            cursor: pointer;
+        }
+
+        .ͼ1a.-ctrl-or-cmd-pressed .cm-url,
+        .ͼ1a.-ctrl-or-cmd-pressed .tok-link {
+            cursor: pointer;
+        }
+
+        .ͼ5 {
+            color: #404740;
+        }
+
+        .ͼ6 {
+            text-decoration: underline;
+        }
+
+        .ͼ7 {
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .ͼ8 {
+            font-style: italic;
+        }
+
+        .ͼ9 {
+            font-weight: bold;
+        }
+
+        .ͼa {
+            text-decoration: line-through;
+        }
+
+        .ͼb {
+            color: #708;
+        }
+
+        .ͼc {
+            color: #219;
+        }
+
+        .ͼd {
+            color: #164;
+        }
+
+        .ͼe {
+            color: #a11;
+        }
+
+        .ͼf {
+            color: #e40;
+        }
+
+        .ͼg {
+            color: #00f;
+        }
+
+        .ͼh {
+            color: #30a;
+        }
+
+        .ͼi {
+            color: #085;
+        }
+
+        .ͼj {
+            color: #167;
+        }
+
+        .ͼk {
+            color: #256;
+        }
+
+        .ͼl {
+            color: #00c;
+        }
+
+        .ͼm {
+            color: #940;
+        }
+
+        .ͼn {
+            color: #f00;
+        }
+
+        .ͼ2f {
+            font-weight: bold;
+        }
+
+        .ͼ2g {
+            font-style: italic;
+        }
+
+        .ͼ2h {
+            font-family: inherit;
+        }
+
+        .ͼ2i {
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .ͼ2j {
+            color: #155BDA;
+        }
+
+        .ͼ2k {
+            font-style: italic;
+        }
+
+        .ͼ2l {
+            color: #740;
+        }
+
+        .ͼ2m {
+            color: #805;
+        }
+
+        .ͼ2n {
+            color: #037;
+        }
+
+        .ͼ2o {
+            color: #490;
+        }
+
+        .ͼ2p {
+            color: #a00;
+        }
+
+        .ͼ2q {
+            color: #471;
+        }
+
+        .ͼ2r {
+            color: #a21;
+        }
+
+        .ͼ2s {
+            color: #940;
+        }
+
+        .ͼ2t {
+            color: #904;
+        }
+
+        .ͼ2e,
+        .ͼ2e.CodeMirror {
+            color: #32373F;
+            background-color: #ffffff;
+            font: -apple-system-body;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .ͼ2e .cm-dropCursor {
+            background-color: black;
+            width: 1px;
+        }
+
+        .ͼ2e .cm-content {
+            font-family: inherit;
+            font-size: 15px;
+            line-height: 1.55;
+            padding-bottom: 400px;
+            margin-left: 0px;
+            margin-right: 0px;
+        }
+
+        .ͼ2e div,
+        .ͼ2e span,
+        .ͼ2e a {
+            font-family: inherit;
+        }
+
+        .ͼ2e>.cm-panels {
+            border: none;
+        }
+
+        .ͼ2e.cm-editor.cm-focused {
+            outline: none !important;
+        }
+
+        .ͼ2e .cm-blockQuote {
+            border-left: 4px solid #627184;
+            opacity: 0.7;
+            padding-left: 4px;
+        }
+
+        .ͼ2e .cm-codeBlock.cm-regionFirstLine,
+        .ͼ2e .cm-codeBlock.cm-regionLastLine {
+            border-radius: 3px;
+        }
+
+        .ͼ2e .cm-codeBlock:not(.cm-regionFirstLine) {
+            border-top: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .ͼ2e .cm-codeBlock:not(.cm-regionLastLine) {
+            border-bottom: none;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .ͼ2e .cm-codeBlock {
+            border-width: 1px;
+            border-style: solid;
+            border-color: #627184;
+            background-color: rgba(155, 155, 155, 0.1);
+            font-family: monospace;
+        }
+
+        .ͼ2e .cm-inlineCode {
+            border-width: 1px;
+            border-style: solid;
+            border-color: rgba(100, 100, 100, 0.5);
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .ͼ2e .cm-mathBlock,
+        .ͼ2e .cm-inlineMath {
+            color: #276;
+        }
+
+        .ͼ2e .cm-tableHeader,
+        .ͼ2e .cm-tableRow,
+        .ͼ2e .cm-tableDelimiter {
+            font-family: monospace;
+        }
+
+        .ͼ2e .cm-taskMarker {
+            font-family: monospace;
+        }
+
+        .ͼ2e:not(:has(> .cm-scroller > .cm-gutters)) .cm-line {
+            padding-left: 1px;
+        }
+
+        .ͼ2e .tok-url.tok-link,
+        .ͼ2e .tok-link.tok-meta,
+        .ͼ2e .tok-link.tok-string {
+            opacity: 0.661;
+        }
+
+        .ͼ2e .cm-strike {
+            text-decoration: line-through;
+        }
+
+        .ͼ2e .cm-h1 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.6em;
+        }
+
+        .ͼ2e .cm-h2 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.4em;
+        }
+
+        .ͼ2e .cm-h3 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.3em;
+        }
+
+        .ͼ2e .cm-h4 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.2em;
+        }
+
+        .ͼ2e .cm-h5 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.1em;
+        }
+
+        .ͼ2e .cm-h6 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.0em;
+        }
+
+        .ͼ2e .cm-highlighted {
+            color: black;
+            background-color: #F7D26E;
+        }
+
+        :root .ͼ2e .cm-panel.cm-search label,
+        :root .ͼ2e .cm-panel.cm-search button,
+        :root .ͼ2e .cm-panel.cm-search input {
+            font-size: 1em;
+            color: black;
+        }
+
+        .ͼ1v {
+            font-weight: bold;
+        }
+
+        .ͼ1w {
+            font-style: italic;
+        }
+
+        .ͼ1x {
+            font-family: inherit;
+        }
+
+        .ͼ1y {
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .ͼ1z {
+            color: #155BDA;
+        }
+
+        .ͼ20 {
+            font-style: italic;
+        }
+
+        .ͼ21 {
+            color: #740;
+        }
+
+        .ͼ22 {
+            color: #805;
+        }
+
+        .ͼ23 {
+            color: #037;
+        }
+
+        .ͼ24 {
+            color: #490;
+        }
+
+        .ͼ25 {
+            color: #a00;
+        }
+
+        .ͼ26 {
+            color: #471;
+        }
+
+        .ͼ27 {
+            color: #a21;
+        }
+
+        .ͼ28 {
+            color: #940;
+        }
+
+        .ͼ29 {
+            color: #904;
+        }
+
+        .ͼ1u,
+        .ͼ1u.CodeMirror {
+            color: #32373F;
+            background-color: #ffffff;
+            font: -apple-system-body;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .ͼ1u .cm-dropCursor {
+            background-color: black;
+            width: 1px;
+        }
+
+        .ͼ1u .cm-content {
+            font-family: inherit;
+            font-size: 15px;
+            line-height: 1.55;
+            padding-bottom: 400px;
+            margin-left: 0px;
+            margin-right: 0px;
+        }
+
+        .ͼ1u div,
+        .ͼ1u span,
+        .ͼ1u a {
+            font-family: inherit;
+        }
+
+        .ͼ1u>.cm-panels {
+            border: none;
+        }
+
+        .ͼ1u.cm-editor.cm-focused {
+            outline: none !important;
+        }
+
+        .ͼ1u .cm-blockQuote {
+            border-left: 4px solid #627184;
+            opacity: 0.7;
+            padding-left: 4px;
+        }
+
+        .ͼ1u .cm-codeBlock.cm-regionFirstLine,
+        .ͼ1u .cm-codeBlock.cm-regionLastLine {
+            border-radius: 3px;
+        }
+
+        .ͼ1u .cm-codeBlock:not(.cm-regionFirstLine) {
+            border-top: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .ͼ1u .cm-codeBlock:not(.cm-regionLastLine) {
+            border-bottom: none;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .ͼ1u .cm-codeBlock {
+            border-width: 1px;
+            border-style: solid;
+            border-color: #627184;
+            background-color: rgba(155, 155, 155, 0.1);
+            font-family: monospace;
+        }
+
+        .ͼ1u .cm-inlineCode {
+            border-width: 1px;
+            border-style: solid;
+            border-color: rgba(100, 100, 100, 0.5);
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .ͼ1u .cm-mathBlock,
+        .ͼ1u .cm-inlineMath {
+            color: #276;
+        }
+
+        .ͼ1u .cm-tableHeader,
+        .ͼ1u .cm-tableRow,
+        .ͼ1u .cm-tableDelimiter {
+            font-family: monospace;
+        }
+
+        .ͼ1u .cm-taskMarker {
+            font-family: monospace;
+        }
+
+        .ͼ1u:not(:has(> .cm-scroller > .cm-gutters)) .cm-line {
+            padding-left: 1px;
+        }
+
+        .ͼ1u .tok-url.tok-link,
+        .ͼ1u .tok-link.tok-meta,
+        .ͼ1u .tok-link.tok-string {
+            opacity: 0.661;
+        }
+
+        .ͼ1u .cm-strike {
+            text-decoration: line-through;
+        }
+
+        .ͼ1u .cm-h1 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.6em;
+        }
+
+        .ͼ1u .cm-h2 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.4em;
+        }
+
+        .ͼ1u .cm-h3 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.3em;
+        }
+
+        .ͼ1u .cm-h4 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.2em;
+        }
+
+        .ͼ1u .cm-h5 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.1em;
+        }
+
+        .ͼ1u .cm-h6 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.0em;
+        }
+
+        .ͼ1u .cm-highlighted {
+            color: black;
+            background-color: #F7D26E;
+        }
+
+        :root .ͼ1u .cm-panel.cm-search label,
+        :root .ͼ1u .cm-panel.cm-search button,
+        :root .ͼ1u .cm-panel.cm-search input {
+            font-size: 1em;
+            color: black;
+        }
+
+        .ͼ1f {
+            font-weight: bold;
+        }
+
+        .ͼ1g {
+            font-style: italic;
+        }
+
+        .ͼ1h {
+            font-family: inherit;
+        }
+
+        .ͼ1i {
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .ͼ1j {
+            color: #155BDA;
+        }
+
+        .ͼ1k {
+            font-style: italic;
+        }
+
+        .ͼ1l {
+            color: #740;
+        }
+
+        .ͼ1m {
+            color: #805;
+        }
+
+        .ͼ1n {
+            color: #037;
+        }
+
+        .ͼ1o {
+            color: #490;
+        }
+
+        .ͼ1p {
+            color: #a00;
+        }
+
+        .ͼ1q {
+            color: #471;
+        }
+
+        .ͼ1r {
+            color: #a21;
+        }
+
+        .ͼ1s {
+            color: #940;
+        }
+
+        .ͼ1t {
+            color: #904;
+        }
+
+        .ͼ1e,
+        .ͼ1e.CodeMirror {
+            color: #32373F;
+            background-color: #ffffff;
+            font: -apple-system-body;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .ͼ1e .cm-dropCursor {
+            background-color: black;
+            width: 1px;
+        }
+
+        .ͼ1e .cm-content {
+            font-family: inherit;
+            font-size: 15px;
+            line-height: 1.55;
+            padding-bottom: 400px;
+            margin-left: 0px;
+            margin-right: 0px;
+        }
+
+        .ͼ1e div,
+        .ͼ1e span,
+        .ͼ1e a {
+            font-family: inherit;
+        }
+
+        .ͼ1e>.cm-panels {
+            border: none;
+        }
+
+        .ͼ1e.cm-editor.cm-focused {
+            outline: none !important;
+        }
+
+        .ͼ1e .cm-blockQuote {
+            border-left: 4px solid #627184;
+            opacity: 0.7;
+            padding-left: 4px;
+        }
+
+        .ͼ1e .cm-codeBlock.cm-regionFirstLine,
+        .ͼ1e .cm-codeBlock.cm-regionLastLine {
+            border-radius: 3px;
+        }
+
+        .ͼ1e .cm-codeBlock:not(.cm-regionFirstLine) {
+            border-top: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .ͼ1e .cm-codeBlock:not(.cm-regionLastLine) {
+            border-bottom: none;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .ͼ1e .cm-codeBlock {
+            border-width: 1px;
+            border-style: solid;
+            border-color: #627184;
+            background-color: rgba(155, 155, 155, 0.1);
+            font-family: monospace;
+        }
+
+        .ͼ1e .cm-inlineCode {
+            border-width: 1px;
+            border-style: solid;
+            border-color: rgba(100, 100, 100, 0.5);
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .ͼ1e .cm-mathBlock,
+        .ͼ1e .cm-inlineMath {
+            color: #276;
+        }
+
+        .ͼ1e .cm-tableHeader,
+        .ͼ1e .cm-tableRow,
+        .ͼ1e .cm-tableDelimiter {
+            font-family: monospace;
+        }
+
+        .ͼ1e .cm-taskMarker {
+            font-family: monospace;
+        }
+
+        .ͼ1e:not(:has(> .cm-scroller > .cm-gutters)) .cm-line {
+            padding-left: 1px;
+        }
+
+        .ͼ1e .tok-url.tok-link,
+        .ͼ1e .tok-link.tok-meta,
+        .ͼ1e .tok-link.tok-string {
+            opacity: 0.661;
+        }
+
+        .ͼ1e .cm-strike {
+            text-decoration: line-through;
+        }
+
+        .ͼ1e .cm-h1 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.6em;
+        }
+
+        .ͼ1e .cm-h2 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.4em;
+        }
+
+        .ͼ1e .cm-h3 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.3em;
+        }
+
+        .ͼ1e .cm-h4 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.2em;
+        }
+
+        .ͼ1e .cm-h5 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.1em;
+        }
+
+        .ͼ1e .cm-h6 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.0em;
+        }
+
+        .ͼ1e .cm-highlighted {
+            color: black;
+            background-color: #F7D26E;
+        }
+
+        :root .ͼ1e .cm-panel.cm-search label,
+        :root .ͼ1e .cm-panel.cm-search button,
+        :root .ͼ1e .cm-panel.cm-search input {
+            font-size: 1em;
+            color: black;
+        }
+
+        .ͼv {
+            font-weight: bold;
+        }
+
+        .ͼw {
+            font-style: italic;
+        }
+
+        .ͼx {
+            font-family: inherit;
+        }
+
+        .ͼy {
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        .ͼz {
+            color: #155BDA;
+        }
+
+        .ͼ10 {
+            font-style: italic;
+        }
+
+        .ͼ11 {
+            color: #740;
+        }
+
+        .ͼ12 {
+            color: #805;
+        }
+
+        .ͼ13 {
+            color: #037;
+        }
+
+        .ͼ14 {
+            color: #490;
+        }
+
+        .ͼ15 {
+            color: #a00;
+        }
+
+        .ͼ16 {
+            color: #471;
+        }
+
+        .ͼ17 {
+            color: #a21;
+        }
+
+        .ͼ18 {
+            color: #940;
+        }
+
+        .ͼ19 {
+            color: #904;
+        }
+
+        .ͼu,
+        .ͼu.CodeMirror {
+            color: #32373F;
+            background-color: #ffffff;
+            font: -apple-system-body;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .ͼu .cm-dropCursor {
+            background-color: black;
+            width: 1px;
+        }
+
+        .ͼu .cm-content {
+            font-family: inherit;
+            font-size: 15px;
+            line-height: 1.55;
+            padding-bottom: 400px;
+            margin-left: 0px;
+            margin-right: 0px;
+        }
+
+        .ͼu div,
+        .ͼu span,
+        .ͼu a {
+            font-family: inherit;
+        }
+
+        .ͼu>.cm-panels {
+            border: none;
+        }
+
+        .ͼu.cm-editor.cm-focused {
+            outline: none !important;
+        }
+
+        .ͼu .cm-blockQuote {
+            border-left: 4px solid #627184;
+            opacity: 0.7;
+            padding-left: 4px;
+        }
+
+        .ͼu .cm-codeBlock.cm-regionFirstLine,
+        .ͼu .cm-codeBlock.cm-regionLastLine {
+            border-radius: 3px;
+        }
+
+        .ͼu .cm-codeBlock:not(.cm-regionFirstLine) {
+            border-top: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .ͼu .cm-codeBlock:not(.cm-regionLastLine) {
+            border-bottom: none;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+
+        .ͼu .cm-codeBlock {
+            border-width: 1px;
+            border-style: solid;
+            border-color: #627184;
+            background-color: rgba(155, 155, 155, 0.1);
+            font-family: monospace;
+        }
+
+        .ͼu .cm-inlineCode {
+            border-width: 1px;
+            border-style: solid;
+            border-color: rgba(100, 100, 100, 0.5);
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        .ͼu .cm-mathBlock,
+        .ͼu .cm-inlineMath {
+            color: #276;
+        }
+
+        .ͼu .cm-tableHeader,
+        .ͼu .cm-tableRow,
+        .ͼu .cm-tableDelimiter {
+            font-family: monospace;
+        }
+
+        .ͼu .cm-taskMarker {
+            font-family: monospace;
+        }
+
+        .ͼu:not(:has(> .cm-scroller > .cm-gutters)) .cm-line {
+            padding-left: 1px;
+        }
+
+        .ͼu .tok-url.tok-link,
+        .ͼu .tok-link.tok-meta,
+        .ͼu .tok-link.tok-string {
+            opacity: 0.661;
+        }
+
+        .ͼu .cm-strike {
+            text-decoration: line-through;
+        }
+
+        .ͼu .cm-h1 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.6em;
+        }
+
+        .ͼu .cm-h2 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.4em;
+        }
+
+        .ͼu .cm-h3 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.3em;
+        }
+
+        .ͼu .cm-h4 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.2em;
+        }
+
+        .ͼu .cm-h5 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.1em;
+        }
+
+        .ͼu .cm-h6 {
+            font-weight: bold;
+            font-family: inherit;
+            font-size: 1.0em;
+        }
+
+        .ͼu .cm-highlighted {
+            color: black;
+            background-color: #F7D26E;
+        }
+
+        :root .ͼu .cm-panel.cm-search label,
+        :root .ͼu .cm-panel.cm-search button,
+        :root .ͼu .cm-panel.cm-search input {
+            font-size: 1em;
+            color: black;
+        }
+
+        .ͼ4 .cm-line ::selection,
+        .ͼ4 .cm-line::selection {
+            background-color: transparent !important;
+        }
+
+        .ͼ4 .cm-line {
+            caret-color: transparent !important;
+        }
+
+        .ͼ4 .cm-content :focus::selection,
+        .ͼ4 .cm-content :focus ::selection {
+            background-color: Highlight !important;
+        }
+
+        .ͼ4 .cm-content :focus {
+            caret-color: initial !important;
+        }
+
+        .ͼ4 .cm-content {
+            caret-color: transparent !important;
+        }
+    </style>
+    <meta charset="UTF-8">
+    <!--
+		No CPS because we need to allow everything due to some dependencies (eg. depd, which comes from maybe Node or Electron
+		uses 'eval'.
+		<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'">
+		-->
+    <title>Joplin</title>
+    <!-- Note: Add new dynamic CSS imports to style.scss to allow them to be included in secondary windows. -->
+    <link rel="stylesheet" href="style.min.css">
+
+    <script src="vendor/lib/smalltalk/dist/smalltalk.min.js"></script>
+    <script src="vendor/lib/tesseract.js/dist/tesseract.min.js"></script>
+    <style data-styled="active" data-styled-version="5.3.11">
+        .jiwcuV {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            height: 32px;
+            min-height: 32px;
+            max-height: 32px;
+            width: auto;
+            min-width: 100px;
+            box-sizing: border-box;
+            border-radius: 3px;
+            border-style: solid;
+            border-width: 1px;
+            padding: 0 14px;
+            justify-content: center;
+            opacity: 1;
+            user-select: none;
+        }
+
+        .kbPjVE {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            height: 26px;
+            min-height: 26px;
+            max-height: 26px;
+            width: auto;
+            min-width: 100px;
+            box-sizing: border-box;
+            border-radius: 3px;
+            border-style: solid;
+            border-width: 1px;
+            padding: 0 14px;
+            justify-content: center;
+            opacity: 1;
+            user-select: none;
+        }
+
+        .hEdBvB {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            height: 26px;
+            min-height: 26px;
+            max-height: 26px;
+            width: 26px;
+            min-width: 26px;
+            max-width: 26px;
+            box-sizing: border-box;
+            border-radius: 3px;
+            border-style: solid;
+            border-width: 1px;
+            padding: 0 4px;
+            justify-content: center;
+            opacity: 1;
+            user-select: none;
+        }
+
+        .fEMHAT {
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+            height: 32px;
+            min-height: 32px;
+            max-height: 32px;
+            width: auto;
+            min-width: 100px;
+            box-sizing: border-box;
+            border-radius: 3px;
+            border-style: solid;
+            border-width: 1px;
+            padding: 0 14px;
+            justify-content: center;
+            opacity: 0.5;
+            user-select: none;
+        }
+
+        .ljyEMI {
+            margin-right: 6px;
+        }
+
+        .hyZlzW {
+            margin-right: 0;
+        }
+
+        .cqJsbA {
+            font-size: 18px;
+        }
+
+        .eYfYjM {
+            border: none;
+            background-color: #2D6BDC;
+        }
+
+        .eYfYjM:hover {
+            background-color: #1E54B6;
+        }
+
+        .eYfYjM:active {
+            background-color: #173F88;
+        }
+
+        .eYfYjM .sc-fqkvVR {
+            color: #ffffff;
+        }
+
+        .eYfYjM .sc-aXZVg {
+            color: #ffffff;
+        }
+
+        .jUcfaC {
+            border: none;
+            background-color: #2D6BDC;
+        }
+
+        .jUcfaC true:hover {
+            background-color: #1E54B6;
+        }
+
+        .jUcfaC true:active {
+            background-color: #173F88;
+        }
+
+        .jUcfaC .sc-fqkvVR {
+            color: #ffffff;
+        }
+
+        .jUcfaC .sc-aXZVg {
+            color: #ffffff;
+        }
+
+        .kIVcKI {
+            border: 1px solid rgba(50, 55, 63, 0.3);
+            background-color: #ffffff;
+        }
+
+        .kIVcKI:hover {
+            background-color: rgba(203, 218, 241, 0.3);
+        }
+
+        .kIVcKI:active {
+            background-color: rgba(203, 218, 241, 0.8);
+        }
+
+        .kIVcKI .sc-fqkvVR {
+            color: #2D6BDC;
+        }
+
+        .kIVcKI .sc-aXZVg {
+            color: #2D6BDC;
+        }
+
+        .cYtxFg {
+            background: none;
+            border-color: #ffffff;
+            color: #ffffff;
+        }
+
+        .cYtxFg:hover {
+            color: rgba(255, 255, 255, 0.7);
+            border-color: rgba(255, 255, 255, 0.7);
+            background: none;
+        }
+
+        .cYtxFg:hover .sc-aXZVg {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .cYtxFg:hover .sc-fqkvVR {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .cYtxFg:active {
+            color: rgba(255, 255, 255, 0.9);
+            border-color: rgba(255, 255, 255, 0.9);
+            background: none;
+        }
+
+        .cYtxFg:active .sc-aXZVg {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .cYtxFg:active .sc-fqkvVR {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .cYtxFg .sc-aXZVg {
+            color: #ffffff;
+        }
+
+        .cYtxFg .sc-fqkvVR {
+            color: #ffffff;
+        }
+
+        .DnUmE {
+            position: relative;
+            display: flex;
+        }
+
+        .GWwwD {
+            background-color: #313640;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            display: inline-flex;
+            flex-direction: column;
+        }
+
+        .imLgwg {
+            flex: 1;
+            box-sizing: border-box;
+            padding: 12px;
+            padding-bottom: 6px;
+            display: flex;
+            align-items: center;
+            user-select: none;
+            text-transform: uppercase;
+        }
+
+        .brPkQo {
+            font-size: 18px;
+            color: #ffffff;
+            margin-right: 8px;
+        }
+
+        .hhvmJE {
+            flex: 1;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .iDmpAY {
+            font-size: 13px;
+            text-decoration: none;
+            color: #ffffff;
+            cursor: default;
+            opacity: 1;
+            white-space: nowrap;
+            display: flex;
+            flex: 1;
+            align-items: center;
+            user-select: none;
+            height: 100%;
+        }
+
+        .iDmpAY:focus-visible {
+            outline: none;
+        }
+
+        .gQOnAi {
+            width: 100%;
+        }
+
+        .cGZLNz {
+            border: 1px solid rgba(98, 114, 132, 0.6);
+            border-radius: 3px;
+            font-size: 12px;
+            color: #32373F;
+            padding: 0 8px;
+            height: 26px;
+            max-height: 26px;
+            box-sizing: border-box;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .cGZLNz::placeholder {
+            color: #627184;
+        }
+
+        .cGZLNz:focus {
+            background-color: #ffffff;
+            border: 1px solid #627284;
+        }
+
+        .kILkiy {
+            position: relative;
+            display: flex;
+            width: 100%;
+        }
+
+        .jxDRVO {
+            position: absolute;
+            right: 0;
+            background: none;
+            border: none;
+            height: 100%;
+            opacity: 1;
+        }
+
+        .hQFofX {
+            font-size: 18px;
+            color: #2D6BDC;
+        }
+
+        .dPRrXf {
+            padding-right: 20px;
+            flex: 1;
+            width: 10px;
+        }
+
+        .dPRrXf::-webkit-search-cancel-button {
+            display: none;
+        }
+
+        .cuqnZe {
+            position: relative;
+            display: flex;
+            width: 100%;
+            min-width: 30px;
+        }
+
+        .dKIlJE {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            background-color: #F4F5F6;
+            gap: 5px;
+        }
+
+        .iNYDfa {
+            width: auto;
+            height: 26px;
+            min-height: 26px;
+            min-width: 37px;
+            max-width: none;
+            white-space: nowrap;
+        }
+
+        .iNYDfa .fa,
+        .iNYDfa .fas {
+            font-size: 11px;
+        }
+
+        .gqLUht {
+            border-radius: 3px 0 0 3px;
+            min-width: 26px;
+            max-width: 26px;
+        }
+
+        .cAAIYv {
+            min-width: 8px;
+            border-radius: 0 3px 3px 0;
+            border-width: 1px 1px 1px 0;
+            width: auto;
+        }
+
+        .fDtwtm {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .iitPKL {
+            display: flex;
+            flex-direction: row;
+            flex: 1 1 auto;
+            gap: 8px;
+        }
+
+        .cZYySV {
+            display: flex;
+            flex-direction: row;
+            flex: 1 1 auto;
+        }
+
+        .hgEzYg {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .dOcXrL {
+            display: flex;
+            background-color: #313640;
+            flex-direction: column;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .bSPXYT {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            padding: 12px;
+            background: #131313;
+            transition: 0.1s;
+            text-decoration: none;
+            cursor: default;
+            opacity: 1;
+            padding-left: 12px;
+        }
+
+        .bSPXYT:hover {
+            background-color: rgba(19, 19, 19, 0.4);
+        }
+
+        .lnaeFW {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            padding: 12px;
+            background: none;
+            transition: 0.1s;
+            text-decoration: none;
+            cursor: default;
+            opacity: 0.8;
+            padding-left: 35px;
+        }
+
+        .lnaeFW:hover {
+            background-color: rgba(19, 19, 19, 0.4);
+        }
+
+        .iiqoJD {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            padding: 12px;
+            background: none;
+            transition: 0.1s;
+            text-decoration: none;
+            cursor: default;
+            opacity: 0.8;
+            padding-left: 12px;
+        }
+
+        .iiqoJD:hover {
+            background-color: rgba(19, 19, 19, 0.4);
+        }
+
+        .fXTVBu {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            padding: 12px;
+            background: #131313;
+            transition: 0.1s;
+            text-decoration: none;
+            cursor: default;
+            opacity: 1;
+            padding-left: 35px;
+        }
+
+        .fXTVBu:hover {
+            background-color: rgba(19, 19, 19, 0.4);
+        }
+
+        .TlFkj {
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            color: #ffffff;
+            padding: 12px;
+            padding-top: 9.600000000000001px;
+            padding-bottom: 9.600000000000001px;
+            border-top: 1px solid #dddddd;
+            border-bottom: 1px solid #dddddd;
+            background-color: #131313;
+            font-size: 12px;
+            opacity: 0.58;
+        }
+
+        .dXScya {
+            font-size: 14px;
+            font-weight: 500;
+            color: #ffffff;
+            white-space: nowrap;
+            display: flex;
+            flex: 1;
+            align-items: center;
+            user-select: none;
+        }
+
+        .faFUbM {
+            font-size: 17px;
+            color: #ffffff;
+            margin-right: 8px;
+        }
+
+        .kMPlsy {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            background-color: #F4F5F6;
+            padding-left: 24px;
+            border-top-width: 1px;
+            border-top-style: solid;
+            border-top-color: #dddddd;
+        }
+
+        .kvenLI {
+            display: flex;
+            box-sizing: border-box;
+            background-color: #ffffff;
+            flex-direction: column;
+            align-items: stretch;
+            padding: 15px;
+            border: 1px solid #dddddd;
+            border-radius: 6px;
+            width: 320px;
+            margin-right: 20px;
+            margin-bottom: 20px;
+            box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            opacity: 1;
+        }
+
+        .fBLxuu {
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .kzXlCH {
+            display: flex;
+            margin-bottom: 10px;
+            flex: 1;
+        }
+
+        .hcEnAK {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .wsclI {
+            border: 1px solid #32373F;
+            border-radius: 4px;
+            padding: 4px 6px;
+            font-size: 9px;
+            color: #32373F;
+            flex-grow: 0;
+            height: min-content;
+            margin-top: auto;
+        }
+
+        .jNNA-dh {
+            font-family: Roboto;
+            color: #32373F;
+            font-size: 12px;
+            font-weight: bold;
+            padding-right: 5px;
+            flex: 1;
+        }
+
+        .bPWzwd {
+            color: #32373F;
+        }
+
+        .bPWzwd:hover {
+            text-decoration: underline;
+        }
+
+        .hVTHXd {
+            color: #627184;
+            font-size: 10.8px;
+        }
+
+        .drKcLl {
+            font-family: Roboto;
+            color: #627184;
+            font-size: 12px;
+            line-height: 1.6em;
+        }
+
+        .jXPJuT {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .dbwipv {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .iNafYb {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .gMvgGk {
+            margin-right: 6px;
+        }
+    </style>
+    <style id="main-theme-stylesheet-container">
+        /* Theme CSS */
+        :root {
+            --joplin-appearance: light;
+            --joplin-background-color: #ffffff;
+            --joplin-background-color2: #313640;
+            --joplin-background-color3: #F4F5F6;
+            --joplin-background-color4: #ffffff;
+            --joplin-background-color5: #2D6BDC;
+            --joplin-background-color-active3: rgba(203, 218, 241, 0.5);
+            --joplin-background-color-active4: rgba(203, 218, 241, 0.8);
+            --joplin-background-color-active5: #173F88;
+            --joplin-background-color-hover2: rgba(19, 19, 19, 0.4);
+            --joplin-background-color-hover3: #CBDAF1;
+            --joplin-background-color-hover4: rgba(203, 218, 241, 0.3);
+            --joplin-background-color-hover5: #1E54B6;
+            --joplin-background-color-hover-dim3: rgba(203, 218, 241, 0.3);
+            --joplin-background-color-transparent: rgba(255, 255, 255, 0.9);
+            --joplin-background-color-transparent2: rgba(0, 0, 0, 0.1);
+            --joplin-background-hover: #13131344;
+            --joplin-block-quote-opacity: 0.7;
+            --joplin-border-color4: rgba(50, 55, 63, 0.3);
+            --joplin-button-min-height: 30px;
+            --joplin-button-min-width: 50px;
+            --joplin-cache-key: 1px;
+            --joplin-code-background-color: rgb(243, 243, 243);
+            --joplin-code-border-color: rgb(220, 220, 220);
+            --joplin-code-color: rgb(0, 0, 0);
+            --joplin-code-mirror-theme: default;
+            --joplin-code-theme-css: atom-one-light.css;
+            --joplin-color: #32373F;
+            --joplin-color2: #ffffff;
+            --joplin-color3: #627284;
+            --joplin-color4: #2D6BDC;
+            --joplin-color5: #ffffff;
+            --joplin-color-active2: rgba(255, 255, 255, 0.9);
+            --joplin-color-bright2: #ffffff;
+            --joplin-color-correct: green;
+            --joplin-color-error: red;
+            --joplin-color-error2: #ff7070;
+            --joplin-color-faded: #627184;
+            --joplin-color-faded2: rgba(255, 255, 255, 0.52);
+            --joplin-color-hover: #32373F;
+            --joplin-color-hover2: rgba(255, 255, 255, 0.7);
+            --joplin-color-hover3: #627284;
+            --joplin-color-warn: rgb(228, 86, 0);
+            --joplin-color-warn2: #ffcb81;
+            --joplin-color-warn3: #ff7626;
+            --joplin-color-warn-url: #155BDA;
+            --joplin-config-screen-padding: 24px;
+            --joplin-destructive-color: #D00707;
+            --joplin-disabled-opacity: 0.3;
+            --joplin-divider-color: #dddddd;
+            --joplin-editor-font-size: 12px;
+            --joplin-editor-padding-left: 8px;
+            --joplin-focus-outline-color: rgb(228, 86, 0);
+            --joplin-font-family: Roboto;
+            --joplin-font-size: 12px;
+            --joplin-header-background-color: #F0F0F0;
+            --joplin-header-button-h-padding: 6px;
+            --joplin-highlighted-color: #131313;
+            --joplin-icon-color: rgba(50, 55, 63, 0.8);
+            --joplin-item-margin-bottom: 10px;
+            --joplin-item-margin-top: 10px;
+            --joplin-line-height: 1.6em;
+            --joplin-list-tab-size: 1.7em;
+            --joplin-main-padding: 12px;
+            --joplin-margin: 15px;
+            --joplin-margin-bottom: 15px;
+            --joplin-margin-left: 15px;
+            --joplin-margin-right: 15px;
+            --joplin-margin-top: 15px;
+            --joplin-mark-highlight-background-color: #F7D26E;
+            --joplin-mark-highlight-color: black;
+            --joplin-note-list-header-border-padding: 4px;
+            --joplin-note-list-header-height: 26px;
+            --joplin-note-viewer-font-size: 15px;
+            --joplin-odd-background-color: #eeeeee;
+            --joplin-raised-background-color: #e5e5e5;
+            --joplin-raised-color: #222222;
+            --joplin-scrollbar-thumb-color: rgba(50, 55, 63, 0.54);
+            --joplin-scrollbar-thumb-color2: rgba(255, 255, 255, 0.46);
+            --joplin-scrollbar-thumb-color-hover: rgba(50, 55, 63, 0.63);
+            --joplin-scrollbar-thumb-color-hover2: rgba(255, 255, 255, 0.63);
+            --joplin-search-marker-background-color: #F7D26E;
+            --joplin-search-marker-color: black;
+            --joplin-selected-color: #e5e5e5;
+            --joplin-selected-color2: #131313;
+            --joplin-selected-divider-color: #B1B1B1;
+            --joplin-table-background-color: rgb(247, 247, 247);
+            --joplin-text-area-line-height: 17px;
+            --joplin-text-selection-color: #0096FF;
+            --joplin-toolbar-height: 26px;
+            --joplin-toolbar-icon-size: 18px;
+            --joplin-toolbar-padding: 6px;
+            --joplin-top-row-height: 50px;
+            --joplin-url-color: #155BDA;
+            --joplin-warning-background-color: #FFD08D;
+            --joplin-zoom-ratio: 1px;
+        }
+
+        /* Base scrollbar size */
+        :root {
+            --scrollbar-size: 7px;
+        }
+
+        /* Editor font CSS */
+
+        /* The '*' and '!important' parts are necessary to make sure Russian text is displayed properly
+			   https://github.com/laurent22/joplin/issues/155
+			
+			   Note: Be careful about the specificity here. Incorrect specificity can break monospaced fonts in tables. */
+        .CodeMirror5 *,
+        .cm-editor .cm-content {
+            font-family: 'Avenir Next', Avenir, Arial, sans-serif !important;
+        }
+    </style>
+    <style type="text/css">
+        .note-list-item {
+
+            &:before {
+                content: '';
+                border-bottom: 1px solid var(--joplin-divider-color);
+                width: 90%;
+                position: absolute;
+                bottom: 0;
+                left: 5%;
+            }
+
+            >.content.-selected {
+                background-color: var(--joplin-selected-color);
+            }
+
+            &:hover,
+            &.-focus-visible>.content {
+                background-color: var(--joplin-background-color-hover3);
+            }
+
+            >.content {
+                display: flex;
+                box-sizing: border-box;
+                position: relative;
+                width: 100%;
+                padding-left: 16px;
+
+                >.checkbox {
+                    display: flex;
+                    align-items: center;
+
+                    >input {
+                        margin: 0px 10px 1px 0px;
+                    }
+                }
+
+                >.title {
+                    font-family: var(--joplin-font-family);
+                    font-size: var(--joplin-font-size);
+                    text-decoration: none;
+                    color: var(--joplin-color);
+                    cursor: default;
+                    white-space: nowrap;
+                    flex: 1 1 0%;
+                    display: flex;
+                    align-items: center;
+                    overflow: hidden;
+
+                    >.watchedicon {
+                        display: none;
+                        padding-right: 4px;
+                        color: var(--joplin-color);
+                    }
+                }
+            }
+
+            >.content.-shared {
+                >.title {
+                    color: var(--joplin-color-warn3);
+                }
+            }
+
+            >.content.-completed {
+                >.title {
+                    opacity: 0.5;
+                }
+            }
+
+            >.content.-watched {
+                >.title {
+                    >.watchedicon {
+                        display: inline;
+                    }
+                }
+            }
+
+            ;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="react-root">
+        <div style="display: none;"></div>
+        <div></div>
+        <div class="profile-default" style="width: 100vw; height: 100vh;">
+            <div style="color: rgb(50, 55, 63); background-color: rgb(255, 255, 255); width: 829px; height: 1006px;">
+                <div style="display: none;"></div>
+                <div style="display: none;"></div>
+                <div style="display: none;"></div>
+                <div style="display: none;"></div>
+                <div class="resizableLayoutItem rli-root"
+                    style="display: flex; flex-direction: row; width: 828px; height: 1006px;">
+                    <div class="resizableLayoutItem rli-sideBar"
+                        style="position: relative; user-select: auto; display: none; flex-direction: column; width: 0px; height: 0px; min-width: 40px; min-height: 40px; box-sizing: border-box; flex-shrink: 0;">
+                        <div class="sc-cwHptR DnUmE" style="height: 0px;">
+                            <div class="sc-dLMFU GWwwD sidebar _scrollbar2" role="navigation" aria-label="Sidebar">
+                                <div style="flex: 1 1 0%;">
+                                    <div class="folder-and-tag-list">
+                                        <div class="item-list items" style="height: 0px; overflow: hidden auto;"><button
+                                                class="sidebar-header-button -collapseall"
+                                                title="Expand all notebooks"><i aria-label="Expand all notebooks"
+                                                    role="img" class="far fa-caret-square-right"></i></button><button
+                                                class="sidebar-header-button -newfolder" title="New notebook"><i
+                                                    aria-label="New notebook" role="img"
+                                                    class="fas fa-plus"></i></button>
+                                            <div role="tree" class="sidebar-list-items-wrapper">
+                                                <div style="height: 0px;"></div>
+                                                <div aria-posinset="1" aria-setsize="7" aria-selected="false"
+                                                    aria-expanded="true" aria-level="1" tabindex="-1" role="treeitem"
+                                                    class="list-item-wrapper   sidebar-header-container"
+                                                    data-folder-id="" style="--depth: 1;">
+                                                    <div class="sc-eDPEul imLgwg"><i aria-hidden="true" role="img"
+                                                            class="sc-eldPxv brPkQo icon-notebooks"></i><span
+                                                            class="sc-gFqAkR hhvmJE">Notebooks</span></div>
+                                                </div>
+                                                <div style="height: 60px;"></div>
+                                                <div aria-posinset="4" aria-setsize="7" aria-selected="true"
+                                                    aria-level="2" tabindex="0" draggable="true" role="treeitem"
+                                                    class="list-item-wrapper -highlight-on-hover -selected list-item-container list-item-depth-1 selected"
+                                                    data-folder-id="7df8f05fd39840349d5d7d2df607ad4b"
+                                                    data-id="7df8f05fd39840349d5d7d2df607ad4b" data-type="2"
+                                                    aria-labelledby=":r18i:" style="--depth: 2;"><a
+                                                        class="sc-ikkxIA iDmpAY list-item" id=":r18i:"
+                                                        data-folder-id="7df8f05fd39840349d5d7d2df607ad4b"><span
+                                                            class="sc-hmdomO eETgcs title">teste</span>
+                                                        <div role="note" aria-label="Contains 2 notes"
+                                                            title="Contains 2 notes" class="note-count-label">2</div>
+                                                    </a><a class="sidebar-expand-link toggle"><i
+                                                            class="sidebar-expand-icon fas fa-caret-right"
+                                                            aria-hidden="true" role="img"></i></a></div>
+                                                <div style="height: 90px;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="flex: 0 1 0%; padding: 12px;"><button
+                                        class="sc-gEvEer sc-imWYAI jiwcuV cYtxFg sc-jXbUNg sc-feUZmu  gQOnAi"><span
+                                            aria-hidden="true" class="sc-eqUAAy sc-fqkvVR ljyEMI cqJsbA icon-sync"
+                                            role="img"></span><span class="sc-aXZVg knHWku">Synchronize</span></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div
+                                style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="resizableLayoutItem rli-noteList"
+                        style="position: relative; user-select: auto; display: flex; flex-direction: column; width: 250px; height: 1006px; min-width: 40px; min-height: 40px; box-sizing: border-box; flex-shrink: 0;">
+                        <div class="sc-cwHptR DnUmE" style="width: 245px; height: 1006px;">
+                            <div role="navigation" aria-label="Note list" class="sc-jxOSlx hgEzYg">
+                                <div class="sc-kOHTFB dKIlJE" style="flex-direction: column;">
+                                    <div class="sc-eBMEME fDtwtm new-note-todo-buttons"><button title=""
+                                            aria-disabled="false"
+                                            class="sc-gEvEer sc-dcJsrY kbPjVE eYfYjM sc-jXbUNg sc-dtInlm  iNYDfa new-note-button"
+                                            size="1"><span aria-hidden="true"
+                                                class="sc-eqUAAy sc-fqkvVR ljyEMI cqJsbA fas fa-plus"
+                                                role="img"></span><span class="sc-aXZVg knHWku">New
+                                                note</span></button><button title="" aria-disabled="false"
+                                            class="sc-gEvEer sc-iGgWBj kbPjVE kIVcKI sc-jXbUNg sc-dtInlm  iNYDfa new-todo-button"
+                                            size="1"><span aria-hidden="true"
+                                                class="sc-eqUAAy sc-fqkvVR ljyEMI cqJsbA fas fa-plus"
+                                                role="img"></span><span class="sc-aXZVg knHWku">New
+                                                to-do</span></button></div>
+                                    <div class="sc-dCFHLb iitPKL search-and-sort" style="flex: 2 1 50%;">
+                                        <div class="sc-dtBdUo cuqnZe search-bar">
+                                            <div class="sc-eeDRCY kILkiy"><input type="search" placeholder="Search..."
+                                                    spellcheck="false" aria-controls="notes-list"
+                                                    class="sc-jsJBEP sc-iHGNWf cGZLNz dPRrXf" value=""><button
+                                                    aria-label="Search" class="sc-koXPp jxDRVO"><span
+                                                        class="sc-bmzYkS hQFofX icon-search"></span></button></div>
+                                        </div>
+                                        <div class="sc-fhzFiK cZYySV"><button title="Toggle sort order field:
+ custom order -> updated date" aria-label="Toggle sort order field:
+ custom order -> updated date" class="sc-gEvEer sc-iGgWBj hEdBvB kIVcKI sc-jXbUNg sc-kOPcWz  gqLUht sort-order-field-button"
+                                                size="1"><span aria-hidden="true"
+                                                    class="sc-eqUAAy sc-fqkvVR hyZlzW cqJsbA fas fa-wrench order"
+                                                    role="img"></span></button><button title="Reverse sort order"
+                                                aria-label="Reverse sort order"
+                                                class="sc-gEvEer sc-iGgWBj hEdBvB kIVcKI sc-jXbUNg sc-cWSHoV  cAAIYv sort-order-reverse-button"
+                                                size="1"><span aria-hidden="true"
+                                                    class="sc-eqUAAy sc-fqkvVR hyZlzW cqJsbA fas fa-long-arrow-alt-up"
+                                                    role="img"></span></button></div>
+                                    </div>
+                                </div>
+                                <div role="listbox" aria-label="Notes" aria-multiselectable="true" tabindex="0"
+                                    class="note-list" id="notes-list"
+                                    aria-activedescendant="list-note-5e129fd5a5b848deb4ee629878f8d881"
+                                    style="width: 245px; height: 925px;">
+                                    <div class="notes" role="presentation" style="flex-direction: column;">
+                                        <div id="list-note-5e129fd5a5b848deb4ee629878f8d881" draggable="true"
+                                            tabindex="-1" class="note-list-item-wrapper odd"
+                                            data-id="5e129fd5a5b848deb4ee629878f8d881" aria-selected="true"
+                                            aria-posinset="1" aria-setsize="2" role="option" style="height: 34px;">
+                                            <div class="dragcursor"
+                                                style="width: 245px; display: none; left: 0px; bottom: 0px;"></div>
+                                            <div data-id="5e129fd5a5b848deb4ee629878f8d881" class="note-list-item"
+                                                style="width: auto; height: 34px;">
+                                                <div class="content -selected   ">
+                                                    <div class="title" data-id="5e129fd5a5b848deb4ee629878f8d881">
+                                                        <i class="watchedicon fa fa-share-square"></i>
+                                                        <span>00 idMu</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="list-note-cb07819047e544cc9dab6215f65ae662" draggable="true"
+                                            tabindex="-1" class="note-list-item-wrapper even"
+                                            data-id="cb07819047e544cc9dab6215f65ae662" aria-selected="false"
+                                            aria-posinset="2" aria-setsize="2" role="option" style="height: 34px;">
+                                            <div class="dragcursor"
+                                                style="width: 245px; display: none; left: 0px; bottom: 0px;"></div>
+                                            <div data-id="cb07819047e544cc9dab6215f65ae662" class="note-list-item"
+                                                style="width: auto; height: 34px;">
+                                                <div class="content    ">
+                                                    <div class="title" data-id="cb07819047e544cc9dab6215f65ae662">
+                                                        <i class="watchedicon fa fa-share-square"></i>
+                                                        <span>Vibe coding: programming through conversation with
+                                                            artificial intelligence Advai</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div
+                                style="position: absolute; user-select: none; width: 10px; height: 100%; top: 0px; cursor: col-resize; right: -5px;">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="resizableLayoutItem rli-editor"
+                        style="display: flex; flex-direction: column; width: 578px; height: 1006px;">
+                        <div class="sc-cwHptR DnUmE" style="width: 578px; height: 1006px;">
+                            <div class="note-editor-wrapper" role="main" aria-label="Note">
+                                <div
+                                    style="box-sizing: border-box; padding-left: 0px; padding-top: 0px; width: 100%; height: 100%;">
+                                    <div style="display: flex; flex-direction: column; height: 100%;">
+                                        <div class="note-title-wrapper"><input class="title-input" type="text"
+                                                placeholder="" aria-label="Note title" value="00 idMu"
+                                                style="flex: 1 1 0%; display: inline-block; padding: 5px 8px 5px 0px; min-height: 38px; box-sizing: border-box; font-weight: bold; color: rgb(50, 55, 63); font-size: 18px; background-color: rgb(255, 255, 255); border: none; width: 100%;">
+                                            <div class="note-title-info-group"><span class="updated-time-label"
+                                                    style="font-family: Roboto; font-size: 12px; line-height: 1.6em; color: rgb(98, 113, 132); padding-left: 8px; white-space: nowrap;">02/10/2025
+                                                    13:39</span>
+                                                <div class="editor-toolbar " role="toolbar" aria-label="Note"
+                                                    style="margin-bottom: 0px; min-width: 0px; border-bottom: none; background-color: rgb(255, 255, 255);">
+                                                    <div class="group"></div>
+                                                    <div class="group"><button class="button toolbar-button -has-title"
+                                                            title="Spell checker" aria-description="Spell checker"
+                                                            aria-disabled="false" tabindex="0"><i aria-hidden="true"
+                                                                role="img"
+                                                                class="toolbar-icon -has-title fas fa-globe"></i><span
+                                                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">pt</span></button><button
+                                                            class="button toolbar-button disabled" title="Set alarm"
+                                                            disabled="" aria-label="Set alarm" aria-disabled="true"
+                                                            tabindex="-1"><span aria-hidden="true" role="img"
+                                                                class="toolbar-icon  icon-alarm"></span><span
+                                                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><button
+                                                            class="button toolbar-button" title="Toggle editor layout"
+                                                            aria-label="Toggle editor layout" aria-disabled="false"
+                                                            tabindex="-1"><span aria-hidden="true" role="img"
+                                                                class="toolbar-icon  icon-layout "></span><span
+                                                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><button
+                                                            class="button toolbar-button" title="Note properties"
+                                                            aria-label="Note properties" aria-disabled="false"
+                                                            tabindex="-1"><span aria-hidden="true" role="img"
+                                                                class="toolbar-icon  icon-info"></span><span
+                                                                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button>
+                                                    </div>
+                                                    <div class="spacer"></div>
+                                                    <div class="group"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div
+                                            style="display: flex; flex: 1 1 0%; padding-left: 8px; max-height: 100%; min-height: 0px;">
+                                            <div
+                                                style="position: relative; display: flex; flex-direction: column; min-height: 0px; width: 100%; height: 100%;">
+                                                <div style="position: relative; display: flex; flex-direction: row;">
+                                                    <div class="editor-toolbar -scrollable" id="CodeMirrorToolbar"
+                                                        role="toolbar" aria-label="Editor actions"
+                                                        style="flex: 1 1 0%; margin-bottom: 0px;">
+                                                        <div class="group"><button
+                                                                class="button toolbar-button disabled" title="Back"
+                                                                disabled="" aria-label="Back" aria-disabled="true"
+                                                                tabindex="0"><span aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  icon-back"></span><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><button
+                                                                class="button toolbar-button disabled" title="Forward"
+                                                                disabled="" aria-label="Forward" aria-disabled="true"
+                                                                tabindex="0"><span aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  icon-forward"></span><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><button
+                                                                class="button toolbar-button"
+                                                                title="Toggle external editing"
+                                                                aria-label="Toggle external editing"
+                                                                aria-disabled="false" tabindex="0"><span
+                                                                    aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  icon-share"></span><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button>
+                                                        </div>
+                                                        <div class="group"><span
+                                                                style="height: 26px; min-width: 13px; display: flex; align-items: center; padding-left: 6px; padding-right: 6px; text-decoration: none; font-family: Roboto; font-size: 12px; box-sizing: border-box; cursor: default; justify-content: center; color: rgb(50, 55, 63); white-space: nowrap;"></span><button
+                                                                class="button toolbar-button disabled" title="Bold"
+                                                                disabled="" aria-label="Bold" aria-disabled="true"
+                                                                tabindex="-1"><span aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  icon-bold"></span><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><button
+                                                                class="button toolbar-button disabled" title="Italic"
+                                                                disabled="" aria-label="Italic" aria-disabled="true"
+                                                                tabindex="-1"><span aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  icon-italic"></span><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><span
+                                                                style="height: 26px; min-width: 13px; display: flex; align-items: center; padding-left: 6px; padding-right: 6px; text-decoration: none; font-family: Roboto; font-size: 12px; box-sizing: border-box; cursor: default; justify-content: center; color: rgb(50, 55, 63); white-space: nowrap;"></span><button
+                                                                class="button toolbar-button disabled" title="Hyperlink"
+                                                                disabled="" aria-label="Hyperlink" aria-disabled="true"
+                                                                tabindex="-1"><span aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  icon-link"></span><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><button
+                                                                class="button toolbar-button disabled" title="Code"
+                                                                disabled="" aria-label="Code" aria-disabled="true"
+                                                                tabindex="-1"><span aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  icon-code"></span><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><button
+                                                                class="button toolbar-button disabled"
+                                                                title="Attach file" disabled="" aria-label="Attach file"
+                                                                aria-disabled="true" tabindex="-1"><span
+                                                                    aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  icon-attachment"></span><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><span
+                                                                style="height: 26px; min-width: 13px; display: flex; align-items: center; padding-left: 6px; padding-right: 6px; text-decoration: none; font-family: Roboto; font-size: 12px; box-sizing: border-box; cursor: default; justify-content: center; color: rgb(50, 55, 63); white-space: nowrap;"></span><button
+                                                                class="button toolbar-button disabled"
+                                                                title="Bulleted List" disabled=""
+                                                                aria-label="Bulleted List" aria-disabled="true"
+                                                                tabindex="-1"><span aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  icon-bulleted-list"></span><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><button
+                                                                class="button toolbar-button disabled"
+                                                                title="Numbered List" disabled=""
+                                                                aria-label="Numbered List" aria-disabled="true"
+                                                                tabindex="-1"><span aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  icon-numbered-list"></span><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><button
+                                                                class="button toolbar-button disabled" title="Checkbox"
+                                                                disabled="" aria-label="Checkbox" aria-disabled="true"
+                                                                tabindex="-1"><span aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  icon-to-do-list"></span><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><button
+                                                                class="button toolbar-button disabled" title="Heading"
+                                                                disabled="" aria-label="Heading" aria-disabled="true"
+                                                                tabindex="-1"><span aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  icon-heading"></span><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><button
+                                                                class="button toolbar-button disabled"
+                                                                title="Horizontal Rule" disabled=""
+                                                                aria-label="Horizontal Rule" aria-disabled="true"
+                                                                tabindex="-1"><i aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  fas fa-ellipsis-h"></i><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><button
+                                                                class="button toolbar-button disabled"
+                                                                title="Insert time" disabled="" aria-label="Insert time"
+                                                                aria-disabled="true" tabindex="-1"><span
+                                                                    aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  icon-add-date"></span><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button><button
+                                                                class="button toolbar-button" title="Insert Drawing"
+                                                                aria-label="Insert Drawing" aria-disabled="false"
+                                                                tabindex="-1"><i aria-hidden="true" role="img"
+                                                                    class="toolbar-icon  fas fa-pen-alt"></i><span
+                                                                    style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button>
+                                                        </div>
+                                                        <div class="spacer"></div>
+                                                        <div class="group"><button aria-label="Toggle editors"
+                                                                aria-description="Switch to the Rich Text Editor"
+                                                                title="Toggle editors" type="button"
+                                                                class="tox-tbtn markdown-active" aria-pressed="false"
+                                                                tabindex="-1"
+                                                                style="border: none; padding: 0px; display: flex; flex-direction: row; align-items: center; background: none;">
+                                                                <div
+                                                                    style="border-style: solid; border-color: rgb(98, 114, 132); border-width: 1px; border-radius: 4px 0px 0px 4px; width: 28.75px; height: 19px; display: flex; justify-content: center; background-color: rgb(98, 114, 132);">
+                                                                    <i class="fab fa-markdown"
+                                                                        style="font-size: 15px; position: relative; top: 1px; color: rgb(244, 245, 246);"></i>
+                                                                </div>
+                                                                <div
+                                                                    style="border-style: solid; border-color: rgb(98, 114, 132); border-width: 1px; border-radius: 0px 4px 4px 0px; width: 28.75px; height: 19px; display: flex; justify-content: center; opacity: 0.5;">
+                                                                    <i class="fas fa-edit"
+                                                                        style="font-size: 14px; border-left: none; position: relative; top: 1px; color: rgb(98, 114, 132);"></i>
+                                                                </div>
+                                                            </button></div>
+                                                    </div>
+                                                </div>
+                                                <div class="note-editor-viewer-row  -show-viewer">
+                                                    <div class="editor">
+                                                        <div
+                                                            style="display: flex; width: auto; height: auto; flex: 1 1 0%; overflow-y: hidden; padding-top: 0px; line-height: 21px; font-size: 15px; color: rgb(50, 55, 63); background-color: rgb(255, 255, 255);">
+                                                            <div
+                                                                class="cm-editor ͼ1 ͼ2 ͼ4 ͼ2e ͼ2a ͼ2b ͼt ͼ2c ͼ2d CodeMirror  ">
+                                                                <div class="cm-announced" aria-live="polite"></div>
+                                                                <div tabindex="-1" class="cm-scroller">
+                                                                    <div spellcheck="false" autocorrect="false"
+                                                                        autocapitalize="sentence" translate="no"
+                                                                        contenteditable="true"
+                                                                        class="cm-content cm-lineWrapping"
+                                                                        role="textbox" aria-multiline="true"
+                                                                        aria-label="Markdown editor"
+                                                                        data-language="markdown" style="tab-size: 4;">
+                                                                        <div class="cm-line" dir="auto"><span
+                                                                                class="cm-hr">---</span></div>
+                                                                        <div class="cm-line" dir="auto">title: markmap
+                                                                        </div>
+                                                                        <div class="cm-line" dir="auto">markmap:</div>
+                                                                        <div class="cm-line" dir="auto"> maxWidth: 300
+                                                                        </div>
+                                                                        <div class="cm-line" dir="auto">
+                                                                            colorFreezeLevel: 2</div>
+                                                                        <div class="cm-line" dir="auto"> initialZoom:
+                                                                            1.0</div>
+                                                                        <div class="cm-line" dir="auto"> scale: 1.0
+                                                                        </div>
+                                                                        <div class="cm-line" dir="auto">
+                                                                            initialExpandLevel: 5</div>
+                                                                        <div class="cm-line"><br></div>
+                                                                        <div class="cm-line" dir="auto"><span
+                                                                                class="cm-hr">---</span></div>
+                                                                        <div class="cm-line"><br></div>
+                                                                        <div class="cm-h1 cm-headerLine cm-header cm-line"
+                                                                            dir="auto"><span
+                                                                                class="tok-heading tok-meta">#</span><span
+                                                                                class="tok-heading"> titulo 01.01
+                                                                            </span><span
+                                                                                class="tok-heading ͼ2j tok-link tok-meta">[</span><span
+                                                                                class="tok-heading ͼ2j tok-link">Updated:
+                                                                                12:45:17</span><span
+                                                                                class="tok-heading ͼ2j tok-link tok-meta">]</span>
+                                                                        </div>
+                                                                        <div class="cm-line"><br></div>
+                                                                        <div class="cm-line" dir="auto">conteudo 01.01
+                                                                        </div>
+                                                                        <div class="cm-line"><br></div>
+                                                                        <div class="cm-h1 cm-headerLine cm-header cm-line"
+                                                                            dir="auto"><span
+                                                                                class="tok-heading tok-meta">#</span><span
+                                                                                class="tok-heading"> titulo 01.02
+                                                                            </span><span
+                                                                                class="tok-heading ͼ2j tok-link tok-meta">[</span><span
+                                                                                class="tok-heading ͼ2j tok-link">Updated:
+                                                                                12:45:21</span><span
+                                                                                class="tok-heading ͼ2j tok-link tok-meta">]</span><span
+                                                                                class="tok-heading"> open</span></div>
+                                                                        <div class="cm-line"><br></div>
+                                                                        <div class="cm-line" dir="auto">conteudo 01.02
+                                                                        </div>
+                                                                        <div class="cm-line"><br></div>
+                                                                        <div class="cm-h2 cm-headerLine cm-header cm-line"
+                                                                            dir="auto"><span
+                                                                                class="tok-heading tok-meta">##</span><span
+                                                                                class="tok-heading"> titulo 02
+                                                                                open</span></div>
+                                                                        <div class="cm-line"><br></div>
+                                                                        <div class="cm-unorderedList cm-regionFirstLine cm-listItem cm-line"
+                                                                            dir="auto"><span
+                                                                                class="ͼ2h tok-meta">-</span><span
+                                                                                class="ͼ2h"> 00 idMu </span></div>
+                                                                        <div class="cm-unorderedList cm-listItem cm-regionFirstLine cm-line"
+                                                                            dir="auto"><span class="ͼ2h"> </span><span
+                                                                                class="ͼ2h ͼ2h"> </span><span
+                                                                                class="ͼ2h ͼ2h tok-meta">-</span><span
+                                                                                class="ͼ2h ͼ2h"> Id relacionamentos
+                                                                            </span></div>
+                                                                        <div class="cm-unorderedList cm-listItem cm-regionLastLine cm-line"
+                                                                            dir="auto"><span class="ͼ2h ͼ2h">
+                                                                            </span><span
+                                                                                class="ͼ2h ͼ2h tok-meta">-</span><span
+                                                                                class="ͼ2h ͼ2h"> inbox </span></div>
+                                                                        <div class="cm-unorderedList cm-listItem cm-line"
+                                                                            dir="auto"><span
+                                                                                class="ͼ2h tok-meta">-</span><span
+                                                                                class="ͼ2h"> 1 todo </span></div>
+                                                                        <div class="cm-unorderedList cm-listItem cm-regionFirstLine cm-line"
+                                                                            dir="auto"><span class="ͼ2h"> </span><span
+                                                                                class="ͼ2h ͼ2h"> </span><span
+                                                                                class="ͼ2h ͼ2h tok-meta">-</span><span
+                                                                                class="ͼ2h ͼ2h"> destaques</span></div>
+                                                                        <div class="cm-unorderedList cm-listItem cm-regionFirstLine cm-regionLastLine cm-line"
+                                                                            dir="auto"><span class="ͼ2h ͼ2h">
+                                                                            </span><span class="ͼ2h ͼ2h ͼ2h">
+                                                                            </span><span
+                                                                                class="ͼ2h ͼ2h ͼ2h tok-meta">-</span><span
+                                                                                class="ͼ2h ͼ2h ͼ2h"> 2025-02 sistMu
+                                                                            </span></div>
+                                                                        <div class="cm-unorderedList cm-listItem cm-line"
+                                                                            dir="auto"><span class="ͼ2h ͼ2h">
+                                                                            </span><span
+                                                                                class="ͼ2h ͼ2h tok-meta">-</span><span
+                                                                                class="ͼ2h ͼ2h"> planos </span></div>
+                                                                        <div class="cm-unorderedList cm-listItem cm-line"
+                                                                            dir="auto"><span class="ͼ2h ͼ2h">
+                                                                            </span><span
+                                                                                class="ͼ2h ͼ2h tok-meta">-</span><span
+                                                                                class="ͼ2h ͼ2h"> eventos </span></div>
+                                                                        <div class="cm-unorderedList cm-listItem cm-regionFirstLine cm-line"
+                                                                            dir="auto"><span class="ͼ2h ͼ2h">
+                                                                            </span><span class="ͼ2h ͼ2h ͼ2h">
+                                                                            </span><span
+                                                                                class="ͼ2h ͼ2h ͼ2h tok-meta">-</span><span
+                                                                                class="ͼ2h ͼ2h ͼ2h"> projetos </span>
+                                                                        </div>
+                                                                        <div class="cm-unorderedList cm-listItem cm-regionFirstLine cm-line"
+                                                                            dir="auto"><span class="ͼ2h ͼ2h ͼ2h">
+                                                                            </span><span class="ͼ2h ͼ2h ͼ2h ͼ2h">
+                                                                            </span><span
+                                                                                class="ͼ2h ͼ2h ͼ2h ͼ2h tok-meta">-</span><span
+                                                                                class="ͼ2h ͼ2h ͼ2h ͼ2h"> workMu, 2025-02
+                                                                                pj servo nerd, work </span></div>
+                                                                        <div class="cm-unorderedList cm-listItem cm-line"
+                                                                            dir="auto"><span class="ͼ2h ͼ2h ͼ2h ͼ2h">
+                                                                            </span><span
+                                                                                class="ͼ2h ͼ2h ͼ2h ͼ2h tok-meta">-</span><span
+                                                                                class="ͼ2h ͼ2h ͼ2h ͼ2h"> 2025-04 siteMu
+                                                                            </span></div>
+                                                                        <div class="cm-gap" style="height: 294px;">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="cm-layer cm-layer-above cm-cursorLayer"
+                                                                        aria-hidden="true"
+                                                                        style="z-index: 150; animation-duration: 1200ms;">
+                                                                    </div>
+                                                                    <div class="cm-layer cm-selectionLayer"
+                                                                        aria-hidden="true" style="z-index: -2;"></div>
+                                                                </div>
+                                                                <div class="cm-panels cm-panels-bottom"
+                                                                    style="bottom: 0px;">
+                                                                    <div class="CodeMirror-measure cm-panel"
+                                                                        style="visibility: hidden; pointer-events: none; height: 0px; overflow: auto;">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="viewer"><iframe class="noteTextViewer"
+                                                            allow="clipboard-write=(self) fullscreen=(self) autoplay=(self) local-fonts=(self) encrypted-media=(self)"
+                                                            allowfullscreen="" aria-label="Note viewer"
+                                                            src="joplin-content://note-viewer/C:/Program Files/Joplin/resources/app.asar/gui/note-viewer/index.html"
+                                                            style="border: none; display: flex; overflow: hidden; vertical-align: top; box-sizing: border-box; width: 100%;"></iframe>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; flex-direction: row; align-items: center;"></div>
+                                        <div class="editor-status-bar">
+                                            <div class="tag-bar"><button class="button toolbar-button" title="Tags"
+                                                    aria-label="Tags" aria-disabled="false"><span aria-hidden="true"
+                                                        role="img" class="toolbar-icon  icon-tags"></span><span
+                                                        style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span></button>
+                                                <div class="content"><span
+                                                        style="font-family: Roboto; font-size: 12px; line-height: 1.6em; color: rgb(50, 55, 63); user-select: none; white-space: nowrap;">Click
+                                                        to add tags...</span></div>
+                                            </div>
+                                            <div class="spacer"></div><span class="status editor-status-indicator "
+                                                aria-live="polite"><button class="button"
+                                                    aria-keyshortcuts="Control+M">Tab indents</button></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./utils/window/eventHandlerOverrides.js"></script>
+    <script src="./main-html.bundle.js"></script>
+
+
+    <div id="joplin-plugin-scripts-container" style="display: none;">
+        <script>
+            (async () => {
+                const exports = {};
+                const module = { exports: exports };
+                const require = window.__pluginLoaderRequireFunctions[1];
+                const joplin = {
+                    require,
+                };
+
+                (() => { "use strict"; var e = {}; e.default = e => ({ plugin: (e, r) => { e.defineExtension("js-draw--cmSelectAndDelete", (function (e) { const r = this.getSearchCursor(e, 0, { multiline: "disable" }), t = r.findNext(), s = r.from(); if (!t) return !1; r.replace(""); const n = [{ anchor: s, head: s }]; return this.setSelections(n, 0), t })) }, codeMirrorResources: ["addon/search/searchcursor.js"] }), exports.default = e.default })();;
+
+                window.__pluginLoaderScriptLoadCallbacks[1](module.exports);
+            })();
+        </script>
+    </div>
+</body>
+
+</html>

@@ -2,6 +2,7 @@
 !README.md
 /*.jpl
 /api
+/src/old/
 /src
 /dist
 tsconfig.json
