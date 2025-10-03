@@ -26,11 +26,6 @@ if (!isAttached) {
 
             // Lê o ID do script do atributo que injetamos no HTML.
             const contentScriptId = detailsElement.dataset.contentScriptId;
-            webviewApi.postMessage(contentScriptId, {
-                command: 'sectionToggled',
-                line: line,
-                isOpen: detailsElement.open,
-            });
         }
     }, true); // Usa a fase de captura para garantir que o evento seja pego
 
