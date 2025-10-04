@@ -21,6 +21,8 @@ module.exports = {
 
             // Sobrescreve o renderizador de `heading_open`
             md.renderer.rules.heading_open = (tokens, idx, options, env, self) => {
+                if (!env.mdPanelEnabled) return originalHeadingOpen(tokens, idx, options, env, self);
+
                 const token = tokens[idx];
                 const level = parseInt(token.tag.substring(1), 10);
 
@@ -56,11 +58,15 @@ module.exports = {
 
             // Sobrescreve o renderizador de `heading_close` para fechar o <summary>
             md.renderer.rules.heading_close = (tokens, idx, options, env, self) => {
+                if (!env.mdPanelEnabled) return self.renderToken(tokens, idx, options);
+
                 return self.renderToken(tokens, idx, options) + '</summary>';
             };
 
             // Sobrescreve o renderizador de `list_item_open`
             md.renderer.rules.list_item_open = (tokens, idx, options, env, self) => {
+                if (!env.mdPanelEnabled) return originalListItemOpen(tokens, idx, options, env, self);
+
                 const currentToken = tokens[idx];
                 let hasChildren = false;
 
@@ -116,6 +122,8 @@ module.exports = {
             };
 
             md.renderer.rules.list_item_close = (tokens, idx, options, env, self) => {
+                if (!env.mdPanelEnabled) return originalListItemClose(tokens, idx, options, env, self);
+
                 // Se o item anterior abriu um <details>, nós já criamos o <li> manualmente.
                 // Então, aqui, só precisamos fechar o </li>.
                 return listDetailsToClose ? '</li>' : originalListItemClose(tokens, idx, options, env, self);
@@ -123,6 +131,8 @@ module.exports = {
 
             // Sobrescreve a abertura de uma lista para fechar o <summary> se necessário
             md.renderer.rules.bullet_list_open = (tokens, idx, options, env, self) => {
+                if (!env.mdPanelEnabled) return originalBulletListOpen(tokens, idx, options, env, self);
+
                 let closingSummary = '';
                 // Se estamos dentro de um item de lista <details> e o nível da nova lista
                 // é maior (mais aninhado), então esta é a sub-lista. Fechamos o <summary>.
@@ -134,6 +144,8 @@ module.exports = {
 
             // Sobrescreve o fechamento de uma lista para fechar o <details> se necessário
             md.renderer.rules.bullet_list_close = (tokens, idx, options, env, self) => {
+                if (!env.mdPanelEnabled) return originalBulletListClose(tokens, idx, options, env, self);
+
                 let closingDetails = '';
                 // Se estamos dentro de um item de lista <details> e o nível da lista que está fechando
                 // é o da nossa sub-lista, fechamos o <details> e resetamos o estado.
@@ -146,6 +158,9 @@ module.exports = {
 
             // Regra de Core para remover o bloco de frontmatter (deve rodar antes das outras)
             md.core.ruler.after('inline', 'frontmatter_remover', (state) => {
+                // Inicializa a flag como desabilitada por padrão para cada renderização.
+                state.env.mdPanelEnabled = false;
+
                 const tokens = state.tokens;
                 // O padrão do frontmatter é: hr, paragraph_open, inline, paragraph_close, hr
                 // Verificamos se o primeiro token é um 'hr' na primeira linha.
@@ -160,8 +175,19 @@ module.exports = {
                     }
 
                     if (endIdx !== -1) {
-                        console.log(`MDPanel: Frontmatter detectado. Removendo ${endIdx + 1} tokens.`);
-                        // Remove todos os tokens do início até o 'hr' de fechamento.
+                        // Extrai o conteúdo do frontmatter
+                        const frontmatterContent = tokens.slice(1, endIdx)
+                            .filter(t => t.type === 'inline')
+                            .map(t => t.content)
+                            .join('\n');
+
+                        // Verifica se 'pluginWebview: true' está presente
+                        if (/pluginWebview:\s*true/.test(frontmatterContent)) {
+                            console.log('MDPanel: Ativado via frontmatter.');
+                            state.env.mdPanelEnabled = true;
+                        }
+
+                        // Remove os tokens do frontmatter
                         tokens.splice(0, endIdx + 1);
                     }
                 }
@@ -170,6 +196,8 @@ module.exports = {
 
             // Regra de Core para pré-processar os tokens e lidar com a exceção do <br>
             md.core.ruler.after('inline', 'br_section_fixer', (state) => {
+                if (!state.env.mdPanelEnabled) return true;
+
                 const tokens = state.tokens;
                 for (let i = 0; i < tokens.length - 1; i++) {
                     const currentToken = tokens[i];
@@ -195,6 +223,8 @@ module.exports = {
             });
 
             md.core.ruler.after('inline', 'section_closer', (state) => {
+                if (!state.env.mdPanelEnabled) return true;
+
                 let finalClosingTags = '';
                 while (stack.length > 0) {
                     stack.pop();
@@ -220,12 +250,8 @@ module.exports = {
         return {
             plugin: plugin,
             assets: function () {
-                return [
-                    // O script que lida com a comunicação e a lógica de UI na WebView.
-                    { name: 'toggle-handler.js' },
-                    // O CSS que controla a aparência do plugin ligado/desligado.
-                    { name: 'section-styles.css' },
-                ];
+                // Os assets não são mais necessários nesta arquitetura.
+                return [];
             },
         };
     }
