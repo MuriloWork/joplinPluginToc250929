@@ -25,11 +25,20 @@
         4. interromper o desenvolvimento após 3 tentativas de solucionar um problema e conduzir análise em busca da causa;
         5. corrigir o plano quando necessario e atualizar o agente.
     - o seu papel é de **"agente"** com as seguintes regras:
-        1. seguir as instruções planejadas, sempre conforme A versão Mais atualizada do plano;
-        2. adotar soluções usando ao máximo a tecnologia, linguagem, padrão;
-        3. alertar Quando for seguir Uma direção diferente da planejada Informando o motivo;
-        4. Junto com as alterações de código propostas Informar Como podem ser verificadas pelo desenvolvedor, através de logs, mensagens e Funções que possam ser verificadas Na interface de usuário;
-        5. diante de erros, identificar as possíveis causas e resumir o que pode ser feito para corrigir, antes de sair criando ou revisando codigos e alertar se identificar um possível problema no paradigma de programação que está no plano.
+        - seguir as instruções planejadas, sempre conforme A versão Mais atualizada do plano;
+        - adotar soluções usando ao máximo a tecnologia, linguagem, padrão;
+        - alertar Quando for seguir Uma direção diferente da planejada Informando o motivo;
+        - Junto com as alterações de código propostas Informar Como podem ser verificadas pelo desenvolvedor, através de logs, mensagens e Funções que possam ser verificadas Na interface de usuário;
+        - diante de erros, identificar as possíveis causas e resumir o que pode ser feito para corrigir, antes de sair criando ou revisando codigos e alertar se identificar um possível problema no paradigma de programação que está no plano.
+        - modo de solução de problema
+            - quero
+                - Identificação de possíveis causas
+                - Explicação Dos trechos de código correspondentes
+                - Sugestão de possíveis soluções
+                - que alerte quando a possivel solução Representar uma mudança de paradigma
+            - não quero
+                - sugestão de alteração de nada que não esteja relacionado estritamente a causa do problema
+                - Alteração de nada que não tenha sido explicitamente autorizado
 - retorno
     - ESTRUTURA PADRÃO DAS RESPOSTAS do agente
         - PAPEL: Agente - Seguindo plano [versão/etapa]
@@ -46,25 +55,43 @@
         - especifico para scripts
             - não incluir icones
 - persistência dos papeis durante as conversas
-    - PARA O DESENVOLVEDOR (VOCÊ):
+    - PARA O DESENVOLVEDOR
         - **Início de cada sessão:** Relembrar os papéis estabelecidos
         - **A cada 5-10 mensagens:** Reconfirmar papéis
         - **Antes de cada etapa:** Confirmar se estou seguindo o plano atualizado
         - **Quando houver desvio:** Alertar imediatamente e corrigir a direção
         - **Após 3 tentativas:** Interromper e conduzir análise da causa
         - a cada requisição
-            - lembrete: ao final, sugerir o que fazer a seguir e pedir autorização para executar
+            - modo de desenvolvimento: ao final, sugerir o que fazer a seguir e pedir autorização para executar
+            - modo de solução de problema
+                - quero
+                    - Identificação de possíveis causas
+                    - Explicação Dos trechos de código correspondentes
+                    - Sugestão de possíveis soluções
+                    - que alerte quando a possivel solução Representar uma mudança de paradigma
+                - não quero
+                    - sugestão de alteração de nada que não esteja relacionado estritamente a causa do problema
+                    - Alteração de nada que não tenha sido explicitamente autorizado
         - PALAVRAS-CHAVE DE ATIVAÇÃO:**
             - **"Relembrar papéis"** - Para reativar a estrutura
             - **"Verificar plano"** - Para confirmar alinhamento
             - **"Pausar para análise"** - Para interromper e analisar
-    - PARA O AGENTE (EU):**
+    - PARA O AGENTE
         - **Sempre começar** cada resposta com confirmação do papel
         - **Antes de cada ação:** Verificar se está alinhada com o plano
         - **Ao desviar:** Alertar explicitamente o motivo
         - **Incluir sempre:** Como verificar as alterações propostas
         - **Em erros:** Identificar causas antes de criar códigos
-- lembrete: ao final, sugerir o que fazer a seguir e pedir autorização para executar
+- modo de desenvolvimento: ao final, sugerir o que fazer a seguir e pedir autorização para executar
+- modo de solução de problema
+    - quero
+        - Identificação de possíveis causas
+        - Explicação Dos trechos de código correspondentes
+        - Sugestão de possíveis soluções
+        - que alerte quando a possivel solução Representar uma mudança de paradigma
+    - não quero
+        - sugestão de alteração de nada que não esteja relacionado estritamente a causa do problema
+        - Alteração de nada que não tenha sido explicitamente autorizado
 </details>
 
 <details>
@@ -410,128 +437,302 @@
                 - Se contiver, adicionar o atributo `open` à tag `<details>` (`<details open>`).
             - verificação:
                 - Títulos no markdown que terminam com ` open` fazem com que a seção correspondente já apareça expandida na visualização.
-    - etapa 8 - melhorias na renderização
-        - objetivo: incluir novas condições (a) Renderização da TOC existente; (b) Como tratar a tag `<br>`
-        - contexto
-            - TOC
-                - as notas são editadas tanto no joplin quanto no vscode
-                - quando editadas no vscode é utilizada uma extensão que aplica e atualiza toc (table of contents) automaticamente
-                - a toc vinda do vscode é uma lista markdown e cada linha é um link markdown atualizado automaticamente pelos títulos dos headings
-                - neste caso a palavra open estará no fim do título do link (entre colchetes) e não no fim da linha
-                - A seção TOC tem heading sempre com titulo "TOC"
-            - tag `<br>`
-                - quando existir a tag `<br>` imedatamente acima de um heading o `</details>` deve ser colocado na linha anterior a essa tag `<br>`
-                    - exemplo da condição encontrada
-                        ```markdown
-                        ## heading 1
-                        
-                        texto
+        - etapa 8 - melhorias na renderização
+            - objetivo: incluir novas condições (a) Renderização da TOC existente; (b) Como tratar a tag `<br>`
+            - contexto
+                - TOC
+                    - as notas são editadas tanto no joplin quanto no vscode
+                    - quando editadas no vscode é utilizada uma extensão que aplica e atualiza toc (table of contents) automaticamente
+                    - a toc vinda do vscode é uma lista markdown e cada linha é um link markdown atualizado automaticamente pelos títulos dos headings
+                    - neste caso a palavra open estará no fim do título do link (entre colchetes) e não no fim da linha
+                    - A seção TOC tem heading sempre com titulo "TOC"
+                - tag `<br>`
+                    - quando existir a tag `<br>` imedatamente acima de um heading o `</details>` deve ser colocado na linha anterior a essa tag `<br>`
+                        - exemplo da condição encontrada
+                            ```markdown
+                            ## heading 1
+                            
+                            texto
 
-                        <br>
+                            <br>
 
-                        ## heading 2
+                            ## heading 2
 
-                        texto
-                        ```
-                    - como fica após a renderização
-                        ```markdown
-                        <details>
-                        <summary><h2 style="display: inline">heading 2<h2></summary>
-                        
-                        texto
-                        </details>
-                        <br>
+                            texto
+                            ```
+                        - como fica após a renderização
+                            ```markdown
+                            <details>
+                            <summary><h2 style="display: inline">heading 2<h2></summary>
+                            
+                            texto
+                            </details>
+                            <br>
 
-                        <details>
-                        <summary><h2 style="display: inline">heading 2<h2></summary>
+                            <details>
+                            <summary><h2 style="display: inline">heading 2<h2></summary>
 
-                        texto
-                        </details>
-                        ```
-                - sempre existe 1 linha em branco entre `<br>` e o heading
+                            texto
+                            </details>
+                            ```
+                    - sempre existe 1 linha em branco entre `<br>` e o heading
+            - Tarefas:
+                - Para o TOC:
+                    - Modificar a regra list_item_open em src/sectionHandler.js.
+                    - Adicionar uma lógica que detecte se o item de lista atual está dentro de uma seção cujo título é "TOC".
+                    - Se estiver, a verificação da palavra-chave open deve ser feita dentro do texto do link Markdown (o conteúdo entre []), em vez de no final da linha.
+                - Para a tag <br>:
+                    - Modificar a regra heading_open em src/sectionHandler.js.
+                    - Antes de gerar as tags <details> de abertura, a lógica deve inspecionar os tokens imediatamente anteriores.
+                    - Se um token do tipo html_block contendo <br> for encontrado antes do cabeçalho, a tag de fechamento </details> da seção anterior deve ser inserida antes da tag <br>.'
+            - Verificação:
+                - Para o TOC:
+                    - Crie uma nota com um cabeçalho # TOC seguido por uma lista de links Markdown.
+                    - Adicione a palavra open dentro do texto de um dos links (ex: - Título da Seção open).
+                    - Verifique se este item da lista é renderizado como uma seção <details> já expandida, enquanto os outros itens da lista TOC não são afetados.
+                - Para a tag <br>:
+                    - Crie uma nota com a estrutura: ## Seção 1, conteúdo, <br>, ## Seção 2.
+                    - Inspecione o HTML renderizado (usando o comando de debug ou as ferramentas do desenvolvedor).
+                    - Confirme que o HTML gerado é </details><br><details...>, garantindo que a tag <br> fique fora da seção recolhível da "Seção 1".
+    - Etapa 9 — ocultar frontmatter
+    - Etapa 10 — comando de habilitação do plugin
+    - Etapa 11 — Estilização dos marcadores de lista (cancelado)
+        - Como poderia ser feito?
+            Sua dúvida sobre o estilo dos marcadores de lista é muito pertinente. O comportamento que você descreve é o padrão do navegador: o marcador do <li> (o bullet) é renderizado, e depois o conteúdo do <li>, que no nosso caso é a tag <details> com seu próprio marcador (o triângulo).
+
+            Para inverter essa ordem e alcançar o resultado desejado (triângulo -> marcador original), precisaremos fazer uma alteração tanto na estrutura HTML que geramos quanto no CSS para controlar a aparência.
+
+            Seguindo as regras do nosso modo de solução de problema, aqui está a análise de como isso pode ser feito.
+
+            Análise da Causa e Solução Proposta
+            Identificação da Causa Raiz:
+
+            O problema é que estamos colocando a tag <details> dentro da tag <li>. O navegador aplica o estilo de lista (o marcador) ao <li> e, separadamente, aplica o marcador padrão (o triângulo) ao <summary> dentro do <details>. Não temos controle direto sobre a ordem desses dois marcadores gerados pelo navegador.
+            Explicação dos Trechos de Código Correspondentes:
+
+            A lógica atual em src/sectionHandler.js na regra list_item_open gera o seguinte HTML:
+            ```javascript
+            // Lógica atual
+            return `<li><details ...><summary>`; 
+            ```
+            Isso resulta em uma estrutura <li><details><summary>...</summary></details></li>, que causa a ordem de marcadores que você observou.
+            Sugestão de Possíveis Soluções:
+
+            A solução é mudar a abordagem: em vez de o <li> conter o <details>, faremos o <details> conter o <li>. Além disso, vamos remover o marcador padrão do <li> via CSS e "simular" o marcador original dentro do <summary>.
+
+            Passo 1: Alterar a Estrutura HTML (em sectionHandler.js)
+
+            Vamos modificar a regra list_item_open para gerar uma estrutura onde o <details> envolve o <li>.
+            O summary conteria o texto do item, e o <li> conteria a sub-lista.
+            A estrutura HTML alvo seria:
+            ```html
+            Show full code block 
+            <details>
+                <summary>
+                    <span class="list-marker-content">...texto do item...</span>
+                </summary>
+                <li> <!-- Este li não terá marcador, apenas conterá a sub-lista -->
+                    <ul>...sub-lista...</ul>
+                </li>
+            </details>
+            ```
+            
+            Passo 2: Alterar o Estilo (com um novo arquivo CSS)
+
+            Criaríamos um arquivo CSS (src/assets/section-styles.css).
+            Nesse CSS, usaríamos a propriedade list-style: none; para remover o marcador padrão do <li> que está dentro do <details>.
+            Usaríamos o pseudo-elemento ::before no nosso <span class="list-marker-content"> para recriar o marcador de lista (o bullet • ou o número) ao lado do texto, mas depois do triângulo do <summary>.
+            Alerta de Paradigma:
+
+            Isso representa uma mudança significativa na forma como renderizamos as listas. Em vez de usar o <li> como o contêiner principal, estamos usando o <details> e tratando o <li> como um mero invólucro para a sub-lista. É uma abordagem mais complexa, mas necessária para obter o controle visual que você deseja.
+            Essa combinação de mudanças no HTML e no CSS nos daria controle total sobre a posição dos elementos, permitindo alcançar a ordem triângulo -> marcador -> texto.
+- historico
+    - versão 2025-10-04
+        - concluidas
+            - Etapa 1 — Configuração e Limpeza
+                - objetivo: Limpar a arquitetura de painel antiga e configurar a base para a nova abordagem de `Content Script`.
+                - tarefas:
+                    - Remover os diretórios `src/ui/` e `web/`.
+                    - Reescrever `index.ts` para registrar um `Content Script` básico do tipo `MarkdownItPlugin`.
+                    - Criar o arquivo `src/content_scripts/sectionHandler.ts` como um placeholder.
+                    - Limpar `webpack.config.js` e `commands.js` de referências à arquitetura antiga.
+                - verificação:
+                    - O plugin compila e carrega no Joplin sem erros.
+                    - O console de desenvolvimento do Joplin exibe uma mensagem confirmando que o `MarkdownItPlugin` foi carregado.
+            - Etapa 2 — Renderização Simples e Estilo
+                - objetivo: Provar que conseguimos interceptar a renderização de um elemento e aplicar um estilo customizado.
+                - tarefas:
+                    - Implementar a lógica em `sectionHandler.ts` para interceptar a renderização de títulos `H1` e envolvê-los em uma tag `<details>`.
+                    - Criar um arquivo `src/assets/section-styles.css` e registrá-lo no `Content Script` para estilizar os novos elementos.
+                - verificação:
+                    - Na visualização de nota do Joplin, todos os títulos `H1` aparecem como seções `<details>` recolhíveis e com o estilo customizado aplicado.
+            - Etapa 3 — Depuração da Renderização HTML
+                - objetivo: Criar uma ferramenta de depuração para extrair o HTML renderizado pelo nosso plugin e salvá-lo em um arquivo para inspeção.
+                - tarefas:
+                    - Criar um novo comando (ex: `debug.renderNoteToHtml`) em `commands.js`.
+                    - A lógica do comando irá:
+                        - Obter o corpo da nota selecionada.
+                        - Instanciar o `markdown-it` localmente, carregar nosso plugin `sectionHandler` e renderizar o corpo da nota para uma string HTML.
+                        - Salvar a string HTML em um arquivo (ex: `debug_render.html`) na raiz do projeto.
+                - verificação:
+                    - Executar o novo comando pela paleta de comandos do Joplin.
+                    - Um arquivo `debug_render.html` é criado na raiz do projeto, permitindo inspecionar o HTML gerado em um navegador.
+            - Etapa 4 — Comunicação e Persistência (Teste com Botão)
+                - objetivo: Validar o ciclo completo de comunicação (da visualização para o plugin) e a persistência da alteração na nota.
+                - tarefas:
+                    - Modificar o `sectionHandler.ts` para adicionar um botão de teste ao lado de cada `H1` renderizado.
+                    - Criar e registrar um arquivo `src/assets/toggle-handler.js` que, ao clicar no botão, envia uma mensagem para o plugin via `webviewApi.postMessage`.
+                    - Em `index.ts`, ouvir a mensagem com `joplin.contentScripts.onMessage` e, ao recebê-la, usar a API do Joplin para adicionar um texto de confirmação ao final da nota.
+                - verificação:
+                    - Clicar no botão de teste na visualização da nota faz com que um texto (ex: "Teste OK!") seja adicionado ao corpo do markdown da nota.
+            - Etapa 5 — Implementação Completa das Seções (Headings)
+                - objetivo: Expandir a lógica para todos os níveis de título e usar o clique nativo do `<summary>`.
+                - tarefas:
+                    - Substituir o botão de teste pela lógica de clique nativa do `<summary>` no `toggle-handler.js`.
+                    - Expandir a lógica do `sectionHandler.ts` para funcionar com todos os níveis de título (H1-H6), utilizando a lógica do `sectioner.js` para garantir o aninhamento correto.
+                    - Implementar a lógica de persistência que adiciona/remove a palavra-chave ` open` no markdown.
+                - verificação:
+                    - Todos os títulos na visualização são seções `<details>` aninhadas corretamente.
+                    - Clicar em um título para abrir/fechar a seção adiciona/remove a palavra ` open` da linha correspondente no editor de markdown.
+            - Etapa 6 — Implementação das Seções (Listas)
+                - objetivo: Adicionar a funcionalidade de transformar listas em seções recolhíveis, similar aos cabeçalhos.
+                - tarefas:
+                    - Modificar o `sectionHandler.ts` para interceptar a renderização das listas (`bullet_list_open`, `ordered_list_open`) existentes no documento.
+                    - Envolver todos os itens da listas que tenham filhos em tags `<details>``<summary>`.
+                    - Implementar a lógica de persistência para listas, usando a palavra-chave ` open` no final do conteudo de todos os itens com filhos.
+                    - Atualizar o `toggle-handler.js` para gerenciar o clique em `summary` de listas.
+                - verificação:
+                    - Todas as listas na visualização aparecem completamente recolhíveis.
+                    - Clicar no `summary` da lista adiciona/remove ` open` no texto do item da lista no markdown.
+            - Etapa 7 — Leitura do Estado `open`
+                - objetivo: Fazer com que as seções já apareçam abertas se a palavra `open` estiver no título do markdown.
+                - tarefas:
+                    - No `MarkdownItPlugin`, ao encontrar um título, verificar se o texto original no markdown contém a palavra-chave ` open`.
+                    - Se contiver, adicionar o atributo `open` à tag `<details>` (`<details open>`).
+                - verificação:
+                    - Títulos no markdown que terminam com ` open` fazem com que a seção correspondente já apareça expandida na visualização.
+            - etapa 8 - melhorias na renderização
+                - objetivo: incluir novas condições (a) Renderização da TOC existente; (b) Como tratar a tag `<br>`
+                - contexto
+                    - TOC
+                        - as notas são editadas tanto no joplin quanto no vscode
+                        - quando editadas no vscode é utilizada uma extensão que aplica e atualiza toc (table of contents) automaticamente
+                        - a toc vinda do vscode é uma lista markdown e cada linha é um link markdown atualizado automaticamente pelos títulos dos headings
+                        - neste caso a palavra open estará no fim do título do link (entre colchetes) e não no fim da linha
+                        - A seção TOC tem heading sempre com titulo "TOC"
+                    - tag `<br>`
+                        - quando existir a tag `<br>` imedatamente acima de um heading o `</details>` deve ser colocado na linha anterior a essa tag `<br>`
+                            - exemplo da condição encontrada
+                                ```markdown
+                                ## heading 1
+                                
+                                texto
+
+                                <br>
+
+                                ## heading 2
+
+                                texto
+                                ```
+                            - como fica após a renderização
+                                ```markdown
+                                <details>
+                                <summary><h2 style="display: inline">heading 2<h2></summary>
+                                
+                                texto
+                                </details>
+                                <br>
+
+                                <details>
+                                <summary><h2 style="display: inline">heading 2<h2></summary>
+
+                                texto
+                                </details>
+                                ```
+                        - sempre existe 1 linha em branco entre `<br>` e o heading
+                - Tarefas:
+                    - Para o TOC:
+                        - Modificar a regra list_item_open em src/sectionHandler.js.
+                        - Adicionar uma lógica que detecte se o item de lista atual está dentro de uma seção cujo título é "TOC".
+                        - Se estiver, a verificação da palavra-chave open deve ser feita dentro do texto do link Markdown (o conteúdo entre []), em vez de no final da linha.
+                    - Para a tag <br>:
+                        - Modificar a regra heading_open em src/sectionHandler.js.
+                        - Antes de gerar as tags <details> de abertura, a lógica deve inspecionar os tokens imediatamente anteriores.
+                        - Se um token do tipo html_block contendo <br> for encontrado antes do cabeçalho, a tag de fechamento </details> da seção anterior deve ser inserida antes da tag <br>.'
+                - Verificação:
+                    - Para o TOC:
+                        - Crie uma nota com um cabeçalho # TOC seguido por uma lista de links Markdown.
+                        - Adicione a palavra open dentro do texto de um dos links (ex: - Título da Seção open).
+                        - Verifique se este item da lista é renderizado como uma seção <details> já expandida, enquanto os outros itens da lista TOC não são afetados.
+                    - Para a tag <br>:
+                        - Crie uma nota com a estrutura: ## Seção 1, conteúdo, <br>, ## Seção 2.
+                        - Inspecione o HTML renderizado (usando o comando de debug ou as ferramentas do desenvolvedor).
+                        - Confirme que o HTML gerado é </details><br><details...>, garantindo que a tag <br> fique fora da seção recolhível da "Seção 1".
+        - Etapa 9 — Comando de Geração do Sumário (TOC)
+            - objetivo: Criar um comando que o usuário possa executar para gerar ou atualizar um sumário no topo da nota.
+            - tarefas:
+                - Reativar/revisar o comando `createUpdateToc` em `src/commands.js`.
+                - A lógica do comando usará `parser.js`, `slug.js` e `patcher.js` para inserir o sumário em markdown em um local específico da nota.
+            - verificação:
+                - Executar o novo comando pela paleta de comandos do Joplin insere um sumário com links clicáveis no corpo da nota.
+        - Etapa 10 — Estilização e Leitura do Estado `open`
+            - objetivo: Aplicar estilos customizados e fazer com que as seções já apareçam abertas se a palavra `open` estiver no título do markdown.
+            - tarefas:
+                - Criar um arquivo CSS (ex: `src/assets/section-styles.css`) com os estilos para `<details>` e `<summary>`.
+                - Registrar este CSS como um asset do `Content Script` em `index.ts`.
+                - No `MarkdownItPlugin`, ao encontrar um título, verificar se o texto original no markdown contém a palavra-chave ` open`.
+                - Se contiver, adicionar o atributo `open` à tag `<details>` (`<details open>`).
+            - verificação:
+                - As seções recolhíveis devem ter o estilo definido no arquivo CSS.
+                - Títulos no markdown que terminam com ` open` devem fazer com que a seção correspondente já apareça expandida na visualização.
+        - Etapa 11 — Comunicação e Persistência do Estado
+            - objetivo: Salvar o estado (aberto/fechado) de uma seção de volta no arquivo markdown quando o usuário clica nela.
+            - tarefas:
+                - Criar um script JS (ex: `src/assets/toggle-handler.js`) e registrá-lo como um asset do `Content Script`.
+                - No script, adicionar listeners de clique nos `<summary>`. Ao clicar, enviar uma mensagem para o plugin principal via `webviewApi.postMessage` com o slug do título e o novo estado (`open`).
+                - Em `index.ts`, ouvir essas mensagens com `joplin.contentScripts.onMessage`.
+                - Ao receber a mensagem, usar `noteSync.js` e `patcher.js` para encontrar a linha do título no markdown e adicionar/remover a palavra-chave ` open`.
+            - verificação:
+                - Clicar em um título na visualização altera seu estado (abre/fecha).
+                - A palavra ` open` é adicionada ou removida da linha correspondente no editor de markdown.
+                - A mudança persiste ao selecionar outra nota e voltar.
+        - Etapa 12 — Comando de Geração do Sumário (TOC)
+            - objetivo: Criar um comando que o usuário possa executar para gerar ou atualizar um sumário (Table of Contents) no topo da nota.
+            - tarefas:
+                - Reativar/revisar o comando `createUpdateToc` em `src/commands.js`.
+                - A lógica do comando usará `parser.js` para extrair todos os títulos, `slug.js` para criar os links, e `patcher.js` para inserir o sumário em markdown em um local específico da nota (ex: após um marcador `<!-- TOC -->`).
+            - verificação:
+                - Executar o novo comando pela paleta de comandos do Joplin.
+                - Um sumário com links clicáveis deve ser inserido no corpo da nota.
+    - versão 2025-09-28
+        - etapas concluidas
+            - Etapa 1 — Núcleo de parsing & sectioning (Concluída)
+            - Objetivo: Construir e validar o motor que entende a nota.
+            - Status: Concluída.
+            - Etapa 2 — Sincronização segura da nota (Concluída)
+            - Objetivo: Implementar leitura/escrita segura da nota.
+            - Status: Concluída.
+            - Etapa 3 — Refatoração da Arquitetura da View (Em andamento)
+            - Objetivo: Reestruturar o código para separar a lógica de montagem do HTML da lógica de gerenciamento do painel, resolvendo o problema de carregamento de assets.
+            - Tarefas:
+                1. Criar o novo arquivo `src/ui/mainHtml.js`.
+                2. Implementar a lógica em `mainHtml.js` para ler `web/index.html`, `web/styles.css` e `web/panel.js`.
+                3. Implementar a função em `mainHtml.js` que combina os assets lidos em uma única string HTML auto-contida.
+                4. Refatorar `panelManager.js` para remover as chamadas `addCss` e `addScript`.
+                5. Refatorar `panelManager.js` para importar e usar `mainHtml.js` para obter o HTML e injetá-lo com `setHtml`.
+        - Etapa 4 — Renderização Inicial da View (Em andamento)
+        - Objetivo: Corrigir o bug atual e fazer com que o painel exiba o conteúdo da nota corretamente, mesmo que ainda sem interatividade.
         - Tarefas:
-            - Para o TOC:
-                - Modificar a regra list_item_open em src/sectionHandler.js.
-                - Adicionar uma lógica que detecte se o item de lista atual está dentro de uma seção cujo título é "TOC".
-                - Se estiver, a verificação da palavra-chave open deve ser feita dentro do texto do link Markdown (o conteúdo entre []), em vez de no final da linha.
-            - Para a tag <br>:
-                - Modificar a regra heading_open em src/sectionHandler.js.
-                - Antes de gerar as tags <details> de abertura, a lógica deve inspecionar os tokens imediatamente anteriores.
-                - Se um token do tipo html_block contendo <br> for encontrado antes do cabeçalho, a tag de fechamento </details> da seção anterior deve ser inserida antes da tag <br>.'
-        - Verificação:
-            - Para o TOC:
-                - Crie uma nota com um cabeçalho # TOC seguido por uma lista de links Markdown.
-                - Adicione a palavra open dentro do texto de um dos links (ex: - Título da Seção open).
-                - Verifique se este item da lista é renderizado como uma seção <details> já expandida, enquanto os outros itens da lista TOC não são afetados.
-            - Para a tag <br>:
-                - Crie uma nota com a estrutura: ## Seção 1, conteúdo, <br>, ## Seção 2.
-                - Inspecione o HTML renderizado (usando o comando de debug ou as ferramentas do desenvolvedor).
-                - Confirme que o HTML gerado é </details><br><details...>, garantindo que a tag <br> fique fora da seção recolhível da "Seção 1".
-    - Etapa 9 — Comando de Geração do Sumário (TOC)
-        - objetivo: Criar um comando que o usuário possa executar para gerar ou atualizar um sumário no topo da nota.
-        - tarefas:
-            - Reativar/revisar o comando `createUpdateToc` em `src/commands.js`.
-            - A lógica do comando usará `parser.js`, `slug.js` e `patcher.js` para inserir o sumário em markdown em um local específico da nota.
-        - verificação:
-            - Executar o novo comando pela paleta de comandos do Joplin insere um sumário com links clicáveis no corpo da nota.
-    - Etapa 10 — Estilização e Leitura do Estado `open`
-        - objetivo: Aplicar estilos customizados e fazer com que as seções já apareçam abertas se a palavra `open` estiver no título do markdown.
-        - tarefas:
-            - Criar um arquivo CSS (ex: `src/assets/section-styles.css`) com os estilos para `<details>` e `<summary>`.
-            - Registrar este CSS como um asset do `Content Script` em `index.ts`.
-            - No `MarkdownItPlugin`, ao encontrar um título, verificar se o texto original no markdown contém a palavra-chave ` open`.
-            - Se contiver, adicionar o atributo `open` à tag `<details>` (`<details open>`).
-        - verificação:
-            - As seções recolhíveis devem ter o estilo definido no arquivo CSS.
-            - Títulos no markdown que terminam com ` open` devem fazer com que a seção correspondente já apareça expandida na visualização.
-    - Etapa 11 — Comunicação e Persistência do Estado
-        - objetivo: Salvar o estado (aberto/fechado) de uma seção de volta no arquivo markdown quando o usuário clica nela.
-        - tarefas:
-            - Criar um script JS (ex: `src/assets/toggle-handler.js`) e registrá-lo como um asset do `Content Script`.
-            - No script, adicionar listeners de clique nos `<summary>`. Ao clicar, enviar uma mensagem para o plugin principal via `webviewApi.postMessage` com o slug do título e o novo estado (`open`).
-            - Em `index.ts`, ouvir essas mensagens com `joplin.contentScripts.onMessage`.
-            - Ao receber a mensagem, usar `noteSync.js` e `patcher.js` para encontrar a linha do título no markdown e adicionar/remover a palavra-chave ` open`.
-        - verificação:
-            - Clicar em um título na visualização altera seu estado (abre/fecha).
-            - A palavra ` open` é adicionada ou removida da linha correspondente no editor de markdown.
-            - A mudança persiste ao selecionar outra nota e voltar.
-    - Etapa 12 — Comando de Geração do Sumário (TOC)
-        - objetivo: Criar um comando que o usuário possa executar para gerar ou atualizar um sumário (Table of Contents) no topo da nota.
-        - tarefas:
-            - Reativar/revisar o comando `createUpdateToc` em `src/commands.js`.
-            - A lógica do comando usará `parser.js` para extrair todos os títulos, `slug.js` para criar os links, e `patcher.js` para inserir o sumário em markdown em um local específico da nota (ex: após um marcador `<!-- TOC -->`).
-        - verificação:
-            - Executar o novo comando pela paleta de comandos do Joplin.
-            - Um sumário com links clicáveis deve ser inserido no corpo da nota.
-- versão antiga, historico 
-    - etapas concluidas
-        - Etapa 1 — Núcleo de parsing & sectioning (Concluída)
-        - Objetivo: Construir e validar o motor que entende a nota.
-        - Status: Concluída.
-        - Etapa 2 — Sincronização segura da nota (Concluída)
-        - Objetivo: Implementar leitura/escrita segura da nota.
-        - Status: Concluída.
-        - Etapa 3 — Refatoração da Arquitetura da View (Em andamento)
-        - Objetivo: Reestruturar o código para separar a lógica de montagem do HTML da lógica de gerenciamento do painel, resolvendo o problema de carregamento de assets.
+            1. Depurar o `mainHtml.js` para garantir que o CSS e o JS estão sendo embutidos como tags `<style>` e `<script>`, e não como texto.
+            2. Garantir que o `panel.js` (embutido) receba a mensagem `init` com o fragmento HTML e o insira corretamente no DOM.
+            3. Testar até que o conteúdo da nota seja visível e estilizado no painel.
+        - Etapa 5 — Persistência do Estado de Toggle (Próxima)
+        - Objetivo: Implementar a funcionalidade de clique nos cabeçalhos (`<summary>`) para salvar o estado `open`/fechado na nota.
         - Tarefas:
-            1. Criar o novo arquivo `src/ui/mainHtml.js`.
-            2. Implementar a lógica em `mainHtml.js` para ler `web/index.html`, `web/styles.css` e `web/panel.js`.
-            3. Implementar a função em `mainHtml.js` que combina os assets lidos em uma única string HTML auto-contida.
-            4. Refatorar `panelManager.js` para remover as chamadas `addCss` e `addScript`.
-            5. Refatorar `panelManager.js` para importar e usar `mainHtml.js` para obter o HTML e injetá-lo com `setHtml`.
-    - Etapa 4 — Renderização Inicial da View (Em andamento)
-    - Objetivo: Corrigir o bug atual e fazer com que o painel exiba o conteúdo da nota corretamente, mesmo que ainda sem interatividade.
-    - Tarefas:
-        1. Depurar o `mainHtml.js` para garantir que o CSS e o JS estão sendo embutidos como tags `<style>` e `<script>`, e não como texto.
-        2. Garantir que o `panel.js` (embutido) receba a mensagem `init` com o fragmento HTML e o insira corretamente no DOM.
-        3. Testar até que o conteúdo da nota seja visível e estilizado no painel.
-    - Etapa 5 — Persistência do Estado de Toggle (Próxima)
-    - Objetivo: Implementar a funcionalidade de clique nos cabeçalhos (`<summary>`) para salvar o estado `open`/fechado na nota.
-    - Tarefas:
-        1. Validar que a comunicação `postMessage` do `panel.js` para o `panelManager.js` está funcionando.
-        2. Testar a lógica em `noteSync.js` e `patcher.js` para garantir que a nota é atualizada corretamente quando um clique ocorre.
-    - Etapa 6 — Sincronização de Edições Externas (Próxima)
-    - Objetivo: Fazer com que o painel atualize automaticamente quando a nota é modificada em outro editor.
-    - Tarefas:
-        1. Implementar e testar o gatilho `onNoteChange` para chamar a função `refreshPanelForSelectedNote`.
+            1. Validar que a comunicação `postMessage` do `panel.js` para o `panelManager.js` está funcionando.
+            2. Testar a lógica em `noteSync.js` e `patcher.js` para garantir que a nota é atualizada corretamente quando um clique ocorre.
+        - Etapa 6 — Sincronização de Edições Externas (Próxima)
+        - Objetivo: Fazer com que o painel atualize automaticamente quando a nota é modificada em outro editor.
+        - Tarefas:
+            1. Implementar e testar o gatilho `onNoteChange` para chamar a função `refreshPanelForSelectedNote`.
 </details></details>

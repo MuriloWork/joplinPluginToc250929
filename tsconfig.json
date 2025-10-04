@@ -11,6 +11,7 @@
         "bkp",
         "dist",
         "temp",
-        "src/old"
+        "src/old",
+        "z_contexto"
     ]
 }

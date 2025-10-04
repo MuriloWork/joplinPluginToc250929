@@ -1,11 +1,14 @@
-/* Estilo para as seções <details> que criamos */
-details.md-panel-section {
-    border: 1px solid #888;
-    border-radius: 5px;
-    padding: 0.5em;
-    margin-bottom: 1em;
+/* Quando o plugin está desabilitado, fazemos o <details> se comportar como um elemento normal */
+.md-panels-disabled details.md-panel,
+.md-panels-disabled details.md-panel-list {
+    /* Impede que o conteúdo dentro do <details> seja escondido */
+    display: block;
 }
 
-details.md-panel-section>summary {
-    cursor: pointer;
+.md-panels-disabled details.md-panel>summary,
+.md-panels-disabled details.md-panel-list>summary {
+    /* Esconde o triângulo (marcador) do <summary> */
+    list-style: none;
+    /* Remove o cursor de ponteiro */
+    cursor: default;
 }

@@ -25,19 +25,6 @@ module.exports = {
                 const level = parseInt(token.tag.substring(1), 10);
 
                 let closingTags = '';
-
-                // Condição de Exceção: Verifica se o token imediatamente anterior é um html_block contendo <br>.
-                if (idx > 0) {
-                    const prevToken = tokens[idx - 1];
-                    // Se o token anterior for um <br>, fecha a seção anterior antes de continuar.
-                    if (prevToken.type === 'html_block' && prevToken.content.includes('<br>')) {
-                        if (stack.length > 0) {
-                            closingTags += '</details>';
-                            stack.pop();
-                        }
-                    }
-                }
-
                 if (listDetailsToClose) {
                     closingTags += '</summary></details>';
                     listDetailsToClose = null;
@@ -157,6 +144,56 @@ module.exports = {
                 return originalBulletListClose(tokens, idx, options, env, self) + closingDetails;
             };
 
+            // Regra de Core para remover o bloco de frontmatter (deve rodar antes das outras)
+            md.core.ruler.after('inline', 'frontmatter_remover', (state) => {
+                const tokens = state.tokens;
+                // O padrão do frontmatter é: hr, paragraph_open, inline, paragraph_close, hr
+                // Verificamos se o primeiro token é um 'hr' na primeira linha.
+                if (tokens.length > 4 && tokens[0].type === 'hr' && tokens[0].map[0] === 0) {
+                    // Encontra o índice do 'hr' de fechamento
+                    let endIdx = -1;
+                    for (let i = 1; i < tokens.length; i++) {
+                        if (tokens[i].type === 'hr') {
+                            endIdx = i;
+                            break;
+                        }
+                    }
+
+                    if (endIdx !== -1) {
+                        console.log(`MDPanel: Frontmatter detectado. Removendo ${endIdx + 1} tokens.`);
+                        // Remove todos os tokens do início até o 'hr' de fechamento.
+                        tokens.splice(0, endIdx + 1);
+                    }
+                }
+                return true;
+            });
+
+            // Regra de Core para pré-processar os tokens e lidar com a exceção do <br>
+            md.core.ruler.after('inline', 'br_section_fixer', (state) => {
+                const tokens = state.tokens;
+                for (let i = 0; i < tokens.length - 1; i++) {
+                    const currentToken = tokens[i];
+                    const nextToken = tokens[i + 1];
+
+                    // Procura pelo padrão: html_block com <br> seguido por heading_open
+                    if (currentToken.type === 'html_block' && currentToken.content.includes('<br>') && nextToken.type === 'heading_open') {
+                        // A pilha (stack) é preenchida durante a renderização, então aqui ela reflete o estado da renderização ANTERIOR.
+                        // Se encontrarmos o padrão, substituímos o token <br> para fechar a seção anterior.
+                        // A verificação da pilha (stack) é removida pois a regra de core roda antes da de renderização.
+                        console.log(`MDPanel: Padrão <br> + heading encontrado. Substituindo token <br> por </details><br> antes do token com map [${nextToken.map.join(', ')}].`);
+
+                        // Cria um novo token para fechar a seção e adicionar o <br>
+                        const replacementToken = new state.Token('html_block', '', 0);
+                        replacementToken.content = '</details><br>';
+
+                        // Substitui o token <br> original pelo novo token
+                        tokens[i] = replacementToken;
+                        // Não precisamos mais do stack.pop() aqui, pois a pilha será gerenciada pela regra section_closer no final.
+                    }
+                }
+                return true;
+            });
+
             md.core.ruler.after('inline', 'section_closer', (state) => {
                 let finalClosingTags = '';
                 while (stack.length > 0) {
@@ -184,7 +221,10 @@ module.exports = {
             plugin: plugin,
             assets: function () {
                 return [
+                    // O script que lida com a comunicação e a lógica de UI na WebView.
                     { name: 'toggle-handler.js' },
+                    // O CSS que controla a aparência do plugin ligado/desligado.
+                    { name: 'section-styles.css' },
                 ];
             },
         };
