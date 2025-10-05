@@ -6,12 +6,12 @@ module.exports = {
             const contentScriptId = context.contentScriptId;
             const openKeywordRegex = /\s+open\s*$/;
 
-            // Armazena a pilha de níveis de cabeçalho
+            // Armazena a pilha de níveis de cabeçalho (ex: 1 para h1, 2 para h2) para controlar o aninhamento das seções <details>.
             const stack = [];
-            // Rastreia se estamos dentro de um item de lista que foi convertido para <details>
-            // e precisa ter seu <summary> e <details> fechados.
+            // Rastreia o estado de um item de lista que foi convertido para <details> e precisa ser fechado posteriormente.
             let listDetailsToClose = null;
 
+            // Salva as regras de renderização originais para podermos chamá-las como fallback.
             const originalListItemOpen = md.renderer.rules.list_item_open || function (tokens, idx, options, env, self) { return self.renderToken(tokens, idx, options); };
             const originalBulletListOpen = md.renderer.rules.bullet_list_open || function (tokens, idx, options, env, self) { return self.renderToken(tokens, idx, options); };
             const originalListItemClose = md.renderer.rules.list_item_close || function (tokens, idx, options, env, self) { return self.renderToken(tokens, idx, options); };
@@ -27,11 +27,12 @@ module.exports = {
                 const level = parseInt(token.tag.substring(1), 10);
 
                 let closingTags = '';
+                // Se um item de lista <details> estava aberto, ele deve ser fechado antes de um novo título.
                 if (listDetailsToClose) {
                     closingTags += '</summary></details>';
                     listDetailsToClose = null;
                 }
-
+                // Fecha todas as seções <details> de nível igual ou inferior ao título atual.
                 while (stack.length > 0 && stack[stack.length - 1] >= level) {
                     stack.pop();
                     closingTags += '</details>';
@@ -42,12 +43,12 @@ module.exports = {
                 const hasOpen = inlineToken && openKeywordRegex.test(inlineToken.content);
                 const openAttr = hasOpen ? ' open' : '';
 
-                // Adiciona o número da linha ao token do cabeçalho para referência no JS
+                // Adiciona o número da linha como um atributo de dados para possível referência futura (ex: debugging, outros scripts).
                 if (token.map) {
                     token.attrSet('data-line', token.map[0]);
                 }
 
-                // Adiciona o estilo para manter o título na mesma linha do marcador <details>
+                // Garante que o título (h1, h2, etc.) seja renderizado na mesma linha que o marcador <summary>.
                 token.attrSet('style', 'display: inline');
 
                 stack.push(level);
@@ -101,8 +102,7 @@ module.exports = {
                     const openAttr = hasOpen ? ' open' : '';
 
                     if (currentToken.map) {
-                        // Adicionamos o data-line ao parágrafo que virá dentro do summary
-                        // para que o toggle-handler possa encontrá-lo.
+                        // Adiciona o número da linha ao parágrafo dentro do summary para referência.
                         const pToken = tokens[idx + 1];
                         pToken.attrSet('data-line', currentToken.map[0]);
                     }
@@ -113,8 +113,7 @@ module.exports = {
                     };
 
                     // Injeta <details> e <summary> antes do item de lista.
-                    // O </summary> será adicionado antes da sub-lista começar.
-                    // Construímos o <li> manualmente para evitar a duplicação.
+                    // O <li> é construído manualmente. O </summary> e </details> serão adicionados por outras regras.
                     return `<li><details class="md-panel-list" data-content-script-id="${contentScriptId}"${openAttr}><summary>`;
                 }
 
@@ -124,8 +123,7 @@ module.exports = {
             md.renderer.rules.list_item_close = (tokens, idx, options, env, self) => {
                 if (!env.mdPanelEnabled) return originalListItemClose(tokens, idx, options, env, self);
 
-                // Se o item anterior abriu um <details>, nós já criamos o <li> manualmente.
-                // Então, aqui, só precisamos fechar o </li>.
+                // Se um <details> foi aberto para este item, o <li> foi manual. Fechamos o </li> aqui.
                 return listDetailsToClose ? '</li>' : originalListItemClose(tokens, idx, options, env, self);
             };
 
@@ -135,7 +133,7 @@ module.exports = {
 
                 let closingSummary = '';
                 // Se estamos dentro de um item de lista <details> e o nível da nova lista
-                // é maior (mais aninhado), então esta é a sub-lista. Fechamos o <summary>.
+                // é maior (mais aninhado), esta é a sub-lista. Fechamos o <summary> para envolvê-la.
                 if (listDetailsToClose && tokens[idx].level > listDetailsToClose.level) {
                     closingSummary = '</summary>';
                 }
@@ -148,7 +146,7 @@ module.exports = {
 
                 let closingDetails = '';
                 // Se estamos dentro de um item de lista <details> e o nível da lista que está fechando
-                // é o da nossa sub-lista, fechamos o <details> e resetamos o estado.
+                // corresponde ao da sub-lista, fechamos o <details> e resetamos o estado.
                 if (listDetailsToClose && tokens[idx].level === listDetailsToClose.level + 1) {
                     closingDetails = '</details>';
                     listDetailsToClose = null;
@@ -156,7 +154,7 @@ module.exports = {
                 return originalBulletListClose(tokens, idx, options, env, self) + closingDetails;
             };
 
-            // Regra de Core para remover o bloco de frontmatter (deve rodar antes das outras)
+            // Regra de Core: Executada antes da renderização para detectar a ativação do plugin via frontmatter.
             md.core.ruler.after('inline', 'frontmatter_remover', (state) => {
                 // Inicializa a flag como desabilitada por padrão para cada renderização.
                 state.env.mdPanelEnabled = false;
@@ -194,8 +192,8 @@ module.exports = {
                 return true;
             });
 
-            // Regra de Core para pré-processar os tokens e lidar com a exceção do <br>
-            md.core.ruler.after('inline', 'br_section_fixer', (state) => {
+            // Regra de Core: Corrige o espaçamento vertical (<br>) entre seções.
+            md.core.ruler.after('frontmatter_remover', 'br_section_fixer', (state) => {
                 if (!state.env.mdPanelEnabled) return true;
 
                 const tokens = state.tokens;
@@ -205,23 +203,17 @@ module.exports = {
 
                     // Procura pelo padrão: html_block com <br> seguido por heading_open
                     if (currentToken.type === 'html_block' && currentToken.content.includes('<br>') && nextToken.type === 'heading_open') {
-                        // A pilha (stack) é preenchida durante a renderização, então aqui ela reflete o estado da renderização ANTERIOR.
-                        // Se encontrarmos o padrão, substituímos o token <br> para fechar a seção anterior.
-                        // A verificação da pilha (stack) é removida pois a regra de core roda antes da de renderização.
-                        console.log(`MDPanel: Padrão <br> + heading encontrado. Substituindo token <br> por </details><br> antes do token com map [${nextToken.map.join(', ')}].`);
-
-                        // Cria um novo token para fechar a seção e adicionar o <br>
-                        const replacementToken = new state.Token('html_block', '', 0);
-                        replacementToken.content = '</details><br>';
-
-                        // Substitui o token <br> original pelo novo token
-                        tokens[i] = replacementToken;
-                        // Não precisamos mais do stack.pop() aqui, pois a pilha será gerenciada pela regra section_closer no final.
+                        // Insere um token `</details>` antes do token `<br>`.
+                        // Isso força o fechamento da seção anterior ANTES do <br> ser renderizado, garantindo o espaçamento correto.
+                        const closeToken = new state.Token('html_block', '', 0);
+                        closeToken.content = '</details>';
+                        tokens.splice(i, 0, closeToken);
+                        i++; // Pula o token que acabamos de inserir para evitar um loop infinito.
                     }
                 }
-                return true;
             });
 
+            // Regra de Core: Garante que todas as seções <details> abertas sejam fechadas no final do documento.
             md.core.ruler.after('inline', 'section_closer', (state) => {
                 if (!state.env.mdPanelEnabled) return true;
 
@@ -241,7 +233,7 @@ module.exports = {
                     token.content = finalClosingTags;
                     state.tokens.push(token);
                 }
-                // Limpa a pilha para a próxima renderização
+                // Limpa os estados para a próxima renderização de nota.
                 stack.length = 0;
                 listDetailsToClose = null;
             });
@@ -250,7 +242,7 @@ module.exports = {
         return {
             plugin: plugin,
             assets: function () {
-                // Os assets não são mais necessários nesta arquitetura.
+                // CSS e JS customizados não são mais necessários, pois usamos as tags nativas <details>/<summary>.
                 return [];
             },
         };
