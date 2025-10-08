@@ -1,0 +1,19 @@
+/* For styling the entire Joplin app (except the rendered Markdown, which is defined in `userstyle.css`) */
+
+/* 1. Desabilita a quebra de linha (word wrap) no editor.
+      Isso faz com que linhas longas se estendam horizontalmente. */
+.cm-content {
+    white-space: pre !important;
+}
+
+/* 2. Garante que o contêiner de rolagem do editor mostre a barra de rolagem
+      horizontal quando o conteúdo for maior que a área visível. */
+/* Esta é a regra mais importante. Ela sobrescreve o 'overflow-x: auto' padrão
+         que não está funcionando devido ao layout flexível do Joplin. */
+/* .note-editor-wrapper {
+    overflow-x: auto !important;
+} */
+
+.cm-lineWrapping {
+    overflow-x: auto !important;
+}
