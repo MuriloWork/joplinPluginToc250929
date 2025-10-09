@@ -1,5 +1,6 @@
 {
     "extraScripts": [
-        "sectionHandler.js"
+        "sectionHandler.js",
+        "contentScript.js"
     ]
 }
