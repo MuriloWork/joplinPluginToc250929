@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist/",
+        "module": "commonjs",
+        "target": "es2020",
+        "allowJs": true,
+        "baseUrl": "."
+    },
+    "exclude": [
+        "node_modules",
+        "bkp",
+        "dist",
+        "temp",
+        "src/old",
+        "z_contexto"
+    ]
+}

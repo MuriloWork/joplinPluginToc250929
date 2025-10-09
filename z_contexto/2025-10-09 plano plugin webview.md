@@ -396,7 +396,7 @@
     - toggle lineWrapping
 	- navegação: gotoLine, gotoEnd
 - etapa 13 — Atualizar documentação 
-- etapa 14 (atual) — implantar toggle lineWrapping
+- etapa 14 — implantar toggle lineWrapping
     - contexto especifico open 
         - classes html: `cm-scroller`, `cm-content`, `cm-lineWrapping`
 		- pasta `docs_joplin`
