@@ -19,6 +19,9 @@
     "publish"
   ],
   "devDependencies": {
+    "@codemirror/commands": "^6.9.0",
+    "@codemirror/state": "^6.2.0",
+    "@codemirror/view": "^6.7.1",
     "@types/node": "^18.7.13",
     "chalk": "^4.1.0",
     "copy-webpack-plugin": "^11.0.0",
@@ -31,6 +34,6 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-      "markdown-it": "^13.0.1"
+    "markdown-it": "^13.0.1"
   }
 }

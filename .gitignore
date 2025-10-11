@@ -11,3 +11,6 @@ src/old/
 
 # Temporary files and reference projects
 temp/
+.gemini/
+z_contexto/
+z_historico

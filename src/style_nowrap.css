@@ -1,0 +1,5 @@
+.cm-content {
+    white-space: pre !important;
+    flex-shrink: 0;
+    overflow-x: auto !important;
+}
