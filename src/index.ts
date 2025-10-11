@@ -1,10 +1,10 @@
 import joplin from 'api';
 import { ContentScriptType, SettingItemType, ToolbarButtonLocation } from 'api/types';
 
-// Content script for legacy collapsible sections
+// ID para o content script das seções recolhíveis
 const LEGACY_CONTENT_SCRIPT_ID = 'mdPanelSectionHandler';
 
-// ID for the new CodeMirror content script
+// ID para o content script do word wrap
 const CM_CONTENT_SCRIPT_ID = 'wordWrapToggler';
 
 const WRAP_COMMAND = 'toggleWordWrap';
@@ -14,15 +14,15 @@ joplin.plugins.register({
     onStart: async function () {
         console.info('MDPanel: Plugin iniciado.');
 
-        // 1. Registra o content script para as seções recolhíveis (legado)
+        // --- 1. Funcionalidade: Seções Recolhíveis ---
         await joplin.contentScripts.register(
             ContentScriptType.MarkdownItPlugin,
             LEGACY_CONTENT_SCRIPT_ID,
             './sectionHandler.js'
         );
+        console.info('MDPanel: Módulo de seções recolhíveis registrado.');
 
-        // 2. Lógica para o botão de quebra de linha
-
+        // --- 2. Funcionalidade: Toggle Word Wrap ---
         await joplin.settings.registerSection('wordWrapSettings', {
             label: 'MDPanel: Word Wrap',
             iconName: 'fas fa-text-width',
@@ -30,7 +30,7 @@ joplin.plugins.register({
 
         await joplin.settings.registerSettings({
             [WRAP_SETTING]: {
-                value: true, // Habilitado por padrão
+                value: false, // Desabilitado por padrão
                 type: SettingItemType.Bool,
                 public: true,
                 label: 'Enable line wrapping for notes',
@@ -41,14 +41,13 @@ joplin.plugins.register({
         await joplin.contentScripts.register(
             ContentScriptType.CodeMirrorPlugin,
             CM_CONTENT_SCRIPT_ID,
-            './contentScript.js'
+            './lineWrapContentScript.js' // Usando o nome de arquivo correto e final
         );
 
-        // O content script precisa disso para a inicialização
+        // Listener para o content script obter o estado inicial do word wrap
         await joplin.contentScripts.onMessage(CM_CONTENT_SCRIPT_ID, async (message: any) => {
             if (message === 'getWordWrapState') {
-                const settings = await joplin.settings.values([WRAP_SETTING]);
-                return settings[WRAP_SETTING];
+                return await joplin.settings.value(WRAP_SETTING);
             }
         });
 
@@ -58,8 +57,7 @@ joplin.plugins.register({
             iconName: 'fas fa-text-width',
             enabledCondition: 'markdownEditorPaneVisible',
             execute: async () => {
-                const settings = await joplin.settings.values([WRAP_SETTING]);
-                const currentVal = settings[WRAP_SETTING];
+                const currentVal = await joplin.settings.value(WRAP_SETTING);
                 const newVal = !currentVal;
                 await joplin.settings.setValue(WRAP_SETTING, newVal);
 
@@ -72,7 +70,6 @@ joplin.plugins.register({
         });
 
         await joplin.views.toolbarButtons.create('wordWrapToggleButton', WRAP_COMMAND, ToolbarButtonLocation.EditorToolbar);
-
         console.info('MDPanel: Botão de toggle word wrap adicionado e pronto.');
     },
 });

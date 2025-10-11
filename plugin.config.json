@@ -1,6 +1,6 @@
 {
     "extraScripts": [
         "sectionHandler.js",
-        "contentScript.js"
+        "lineWrapContentScript.js"
     ]
 }

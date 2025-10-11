@@ -11,3 +11,9 @@ src/old/
 
 # Temporary files and reference projects
 temp/
+<<<<<<< HEAD
+=======
+.gemini/
+z_contexto/
+z_historico
+>>>>>>> feature/toggle-word-wrap
