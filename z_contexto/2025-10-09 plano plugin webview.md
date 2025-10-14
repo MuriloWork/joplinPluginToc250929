@@ -412,3 +412,20 @@
         - Exibir barra de rolagem horizontal do conteúdo 
         - Navegação via tecla `End` deve atingir o final da linha (que já não tem quebra)
         - Deve funcionar no joplin mobile
+    - Etapas para Integração
+        - Preparar a Branch main
+        - Certifique-se de que sua branch main está com a versão mais recente do seu código de seções recolhíveis.
+            - Copie o arquivo src/lineWrapContentScript.ts da sua branch atual para a pasta src/ da sua branch main.
+        - Mesclar Dependências (package.json)
+            - Abra o arquivo package.json na sua branch main.
+            - Na seção devDependencies, adicione a dependência do CodeMirror que utilizamos para os comandos de cursor:
+            - Após salvar o arquivo, execute npm install no terminal para instalar a nova dependência.
+        - Unificar a Lógica de Inicialização (src/index.ts)
+            - Este é o passo mais importante. Você precisará mesclar o conteúdo da função onStart do index.ts da sua branch de funcionalidade com o index.ts da branch main.
+            - A função onStart na branch main resultante deverá conter:
+            - O registro do content script para as seções recolhíveis (o sectionHandler.js, que provavelmente é do tipo ContentScriptType.MarkdownItPlugin).
+            - Todo o código da funcionalidade de quebra de linha que desenvolvemos (registro do ContentScriptType.CodeMirrorPlugin, configurações, comandos, botões e listeners).
+            - O resultado final dentro de joplin.plugins.register({ onStart: async function() { ... } }) será a soma das duas funcionalidades.
+        - Atualizar a Documentação (README.md)
+            - Edite o arquivo README.md na branch main.
+            - Adicione uma nova seção explicando a funcionalidade "Toggle Word Wrap", como usar o botão na barra de ferramentas e a nova opção de configuração que aparece nas configurações do Joplin.
